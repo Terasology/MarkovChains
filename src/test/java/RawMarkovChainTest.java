@@ -1,5 +1,5 @@
 import org.junit.Test;
-import org.terasology.markovChains.MarkovChain;
+import org.terasology.markovChains.RawMarkovChain;
 import org.terasology.math.TeraMath;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
@@ -10,7 +10,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotSame;
 
-public class MarkovChainTest {
+public class RawMarkovChainTest {
     Random randomNumberGenerator = new FastRandom(7357);
 
     /**
@@ -47,7 +47,7 @@ public class MarkovChainTest {
         final float[][] probabilities = randomTransitionArray(order, states);
         final float MAX_ERROR = 1.0e-4f;
 
-        MarkovChain markovChain = new MarkovChain(order, states, probabilities[0]);
+        RawMarkovChain markovChain = new RawMarkovChain(order, states, probabilities[0]);
         for(int i = 0; i < probabilities[0].length; i++) {
             int[] stateArray = indexToStates(order, states, i);
             assert(TeraMath.fastAbs(probabilities[1][i] - markovChain.getProbability(stateArray)) < MAX_ERROR );
@@ -81,7 +81,7 @@ public class MarkovChainTest {
                 doNotSkipNTransitionArray(n, order, states):
                     skipNTransitionArray(n, order, states);
 
-        MarkovChain chain = new MarkovChain(order, states, props2A);
+        RawMarkovChain chain = new RawMarkovChain(order, states, props2A);
 
         LinkedList<Integer> previousStates = new LinkedList<>();
 

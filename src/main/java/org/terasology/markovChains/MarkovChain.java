@@ -16,216 +16,97 @@
 package org.terasology.markovChains;
 
 import com.google.common.base.Preconditions;
-import org.terasology.math.TeraMath;
+import com.google.common.collect.ImmutableList;
+import org.terasology.utilities.random.FastRandom;
+import org.terasology.utilities.random.Random;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * N-order Markov Chain implementation.
+ * This is the user friendly version.
+ *
+ * @tparam S The type of the states.
  *
  * @since 31-10-2014
  * @author Linus van Elswijk
  */
-public class MarkovChain {
+public class MarkovChain<S> extends MarkovChainBase {
 
-    /**
-     * Constructs a second order Markov Chain.
-     *
-     * @param probabilities A 3d matrix of transition probabilities.
-     *                      Every element probabilities[x][y][z] determines the probability of transitioning
-     *                      to state z, given previous state y and second previous state x.
-     */
-    public MarkovChain(final float[][][] probabilities) {
-        this(2, probabilities[0][0].length, flatten(probabilities));
+    public MarkovChain(int order, List<S> states, float[] transitionProbabilities) {
+        this(order, states, transitionProbabilities, new FastRandom());
     }
 
-    /**
-     * Constructs a (first order) Markov Chain.
-     *
-     * @param probabilities A 2d matrix of transition probabilities.
-     *                      Every element probabilities[x][y] determines the probability of transitioning
-     *                      from state x to state y.
-     */
-    public MarkovChain(final float[][] probabilities) {
-        this(1, probabilities[0].length, flatten(probabilities));
+    public MarkovChain(int order, List<S> states, float[] transitionProbabilities, long seed) {
+        this(order, states, transitionProbabilities, new FastRandom(seed));
     }
 
-    /**
-     * Constructs a Markov Chain of any order and any nr of states.
-     *
-     * <b>Note:</b> Avoid calling this constructor directly. Use the more user friendly, 2D and 3D array versions
-     * whenever possible.
-     *
-     * @param order The order (>= 1) of the Markov Chain,
-     *      i.e. how many (previous) states are considered to compute the next.
-     * @param nrOfStates The nr of states (>=1).
-     * @param probabilities The transition probabilities of length pow(nrOfStates, order + 1).
-     *      The provided array should be a flattened n-dimensional array of probabilities, with
-     *      n being the order of the markov chain.
-     */
-    public MarkovChain(final int order, final int nrOfStates, final float[] probabilities) {
-        // argument exception message formats //////////////////////////////////////
-
-        final String STATE_ARGUMENT_EXCEPTION_MESSAGE         = "nrOfStates=%s, should be >= 1",
-                     ORDER_ARGUMENT_EXCEPTION_MESSAGE         = "order=%s, should be >= 1",
-                     PROBABILITIES_ARGUMENT_EXCEPTION_MESSAGE = "probabilities.length=%s, with order=%s and nrOfStates=%s the expected length is %s";
-
-        // check argument preconditions  ///////////////////////////////////////////
-
-        final int REQUIRED_NR_OF_PROBABILITIES = TeraMath.pow(nrOfStates, order + 1);
+    public MarkovChain(int order, List<S> states, float[] transitionProbabilities, Random random) {
+        super(order, states.size());
 
         Preconditions.checkArgument(
-                nrOfStates > 0,
-                STATE_ARGUMENT_EXCEPTION_MESSAGE,
-                nrOfStates
+                allUnique(states),
+                "All objects in the state list should be unique."
         );
+
+        this.states = ImmutableList.copyOf(states);
+        this.rawMarkovChain = new RawMarkovChain(ORDER, NR_OF_STATES, transitionProbabilities);
+        this.random = random;
+        this.history = new LinkedList<S>();
+        this.rawHistory = new LinkedList<Integer>();
+
+        while(history.size() < order) {
+            history.push(states.get(0));
+            rawHistory.push(0);
+        }
+    }
+
+
+    public S next() {
+        float randomNumber = random.nextFloat();
+        int rawNext = rawMarkovChain.getNext(randomNumber, rawHistory);
+
+        S next = states.get(rawNext);
+
+        history.removeFirst();
+        rawHistory.removeFirst();
+        history.push(next);
+        rawHistory.push(rawNext);
+
+        return next;
+    }
+
+    public S current() {
+        return lookBack(0);
+    }
+
+    public S lookBack() {
+        return lookBack(1);
+    }
+
+    public S lookBack(final int n) {
+        final String ILLEGAL_N_MESSAGE = "Expected 0 <= n < %s, received n = %s.";
         Preconditions.checkArgument(
-                order > 0,
-                ORDER_ARGUMENT_EXCEPTION_MESSAGE,
-                order
-        );
-        Preconditions.checkArgument(
-                probabilities.length == REQUIRED_NR_OF_PROBABILITIES,
-                PROBABILITIES_ARGUMENT_EXCEPTION_MESSAGE,
-                probabilities.length, order, nrOfStates, REQUIRED_NR_OF_PROBABILITIES
+                1 <= n && n < ORDER,
+                ILLEGAL_N_MESSAGE, ORDER, n
         );
 
-        // initialize private data ////////////////////////////////////////////////
-
-        this.ORDER = order;
-        this.NR_OF_STATES = nrOfStates;
-        transitionProbabilityArray = new float[REQUIRED_NR_OF_PROBABILITIES];
-
-        for(int i = 0; i < probabilities.length; i++) {
-            this.transitionProbabilityArray[i] = probabilities[i];
-        }
-        normalizeProbabilities();
-    }
-
-    public int getNext(float randomNumber, List<Integer> states) {
-        int[] statesArray = new int[states.size()];
-
-        {
-            int i = 0;
-            for(Iterator<Integer> it = states.iterator(); it.hasNext(); i++) {
-                statesArray[i] = it.next();
-            }
-        }
-
-        return getNext(randomNumber, statesArray);
-    }
-
-    public int getNext(float randomNumber, int ... states ) {
-        // check preconditions //////////////////////
-        final String NR_OF_STATES_MISMATCH_MESSAGE = "Received %s states. Nr of states given as should match the order (=%s).";
-        Preconditions.checkArgument(states.length == ORDER, NR_OF_STATES_MISMATCH_MESSAGE, states.length, ORDER);
-
-        // method body /////////////////////////////
-        final int START_INDEX = toIndex(states);
-        final int END_INDEX = lastIndex(states);
-
-        for(int i = START_INDEX; i < END_INDEX; i++) {
-            randomNumber -= transitionProbabilityArray[i];
-            if(randomNumber < 0)
-                return i % NR_OF_STATES;
-        }
-
-        return END_INDEX % NR_OF_STATES;
-    }
-
-    public float getProbability(final int... states) {
-        return transitionProbabilityArray[toIndex(states)];
+        return history.get(history.size() - n - 1);
     }
 
 
-    private int toIndex(final int ... states) {
-        int index = 0;
+    public final ImmutableList<S> states;
 
-        for(int i = 0            , statePower = TeraMath.pow(NR_OF_STATES, ORDER);
-                i < states.length;
-                i++              , statePower /= NR_OF_STATES
-                ) {
-            index += states[i] * statePower;
-        }
 
-        return index;
+    private final LinkedList<S> history;
+    private final LinkedList<Integer> rawHistory;
+
+    private final Random random;
+    private final RawMarkovChain rawMarkovChain;
+
+
+    private final static <S> boolean allUnique(List<S> objects) {
+        Set<S> set = new HashSet<>(objects);
+        return set.size() == objects.size();
     }
-
-    private int lastIndex(int ... states) {
-        return toIndex(states) + NR_OF_STATES - 1;
-    }
-
-    private void normalizeProbabilities() {
-        int[] indices = new int[ORDER];
-
-        do {
-            normalizeProbabilities(indices);
-        } while( increment(indices) );
-    }
-
-    private void normalizeProbabilities(final int ... states) {
-        final int START_INDEX = toIndex(states);
-        final int END_INDEX = lastIndex(states);
-
-        float sumOfProbabilities = 0;
-
-        for(int i = START_INDEX; i <= END_INDEX; i++) {
-            sumOfProbabilities += transitionProbabilityArray[i];
-        }
-
-        for(int i = START_INDEX; i <= END_INDEX; i++) {
-            transitionProbabilityArray[i] /= sumOfProbabilities;
-        }
-    }
-
-    private boolean increment(int[] indices) {
-        for(int i = indices.length - 1; i >= 0; i--) {
-            indices[i]++;
-            indices[i] %= NR_OF_STATES;
-
-            if(indices[i] != 0)
-                return true;
-        }
-
-        return false;
-    }
-
-    private final int ORDER;
-    private final int NR_OF_STATES;
-    private final float[] transitionProbabilityArray;
-
-    private static float[] flatten(final float[][][] probabilities) {
-        final int WIDTH  = probabilities.length;
-        final int HEIGHT = probabilities[0].length;
-        final int DEPTH = probabilities[0][0].length;
-
-        float[] flattened = new float[WIDTH * HEIGHT * DEPTH];
-
-        for(int i=0 , x=0; x < WIDTH; x++) {
-            for(int y=0; y < HEIGHT; y++) {
-                for(int z=0; z < DEPTH; z++, i++) {
-                    flattened[i] = probabilities[x][y][z];
-                }
-            }
-        }
-
-        return flattened;
-    };
-
-    private static float[] flatten(final float[][] probabilities) {
-        final int WIDTH  = probabilities.length;
-        final int HEIGHT = probabilities[0].length;
-
-        float[] flattened = new float[WIDTH * HEIGHT];
-
-        for(int i=0 , x=0; x < WIDTH; x++) {
-            for(int y=0; y < HEIGHT; y++, i++) {
-                flattened[i] = probabilities[x][y];
-            }
-        }
-
-        return flattened;
-    };
-
 }
