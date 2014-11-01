@@ -1,4 +1,5 @@
 import org.junit.Test;
+import org.terasology.markovChains.MarkovChain;
 import org.terasology.markovChains.RawMarkovChain;
 import org.terasology.math.TeraMath;
 import org.terasology.utilities.random.FastRandom;
@@ -6,9 +7,7 @@ import org.terasology.utilities.random.Random;
 
 import java.util.LinkedList;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertNotSame;
+import static junit.framework.Assert.*;
 
 public class RawMarkovChainTest {
     Random randomNumberGenerator = new FastRandom(7357);
@@ -36,21 +35,162 @@ public class RawMarkovChainTest {
      * Also tests whether or not probabilities get normalized correctly.
      */
     @Test
-    public void ConstructorTest() {
+    public void ConstructorAndNormalizationTest() {
         ConstructorTest(1, 17);
         ConstructorTest(2, 9);
         ConstructorTest(3, 5);
         ConstructorTest(9, 2);
     }
 
-    private void ConstructorTest(final int order, final int states) {
-        final float[][] probabilities = randomTransitionArray(order, states);
+    /**
+     * Tests the isNormalized method.
+     */
+    @Test
+    public void TestIsNormalized() {
+        RawMarkovChain chain = new RawMarkovChain(1, 4, randomTransitionArray(1, 4)[0]);
+
+        assertFalse(chain.isNormalized());
+        chain.normalizeProbabilities();
+        assertTrue(chain.isNormalized());
+        chain.setProbability(0.5f, 1, 3);
+        assertFalse(chain.isNormalized());
+        chain.normalizeProbabilities();
+        assertTrue(chain.isNormalized());
+        chain.normalizeProbabilities();
+        assertTrue(chain.isNormalized());
+    }
+
+    /**
+     * Tests user friendly wrappers of methods:
+     *  * Constructor accepting a 2D array
+     *  * Constructor accepting a 3D array
+     */
+    @Test
+    public void testSugar()
+    {
+        // shared data ////////////////////
         final float MAX_ERROR = 1.0e-4f;
 
-        RawMarkovChain markovChain = new RawMarkovChain(order, states, probabilities[0]);
-        for(int i = 0; i < probabilities[0].length; i++) {
+        // Test 2D matrix constructor /////
+        {
+            final float[][] MATRIX_2D = {
+                    {0.0f, 0.1f, 0.2f, 0.3f},
+                    {1.0f, 1.1f, 1.2f, 1.3f},
+                    {2.0f, 2.1f, 2.2f, 2.3f},
+                    {3.0f, 3.1f, 3.2f, 3.3f}
+            };
+
+            RawMarkovChain firstOrder = new RawMarkovChain(MATRIX_2D);
+
+            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(0, 0) - MATRIX_2D[0][0]) < MAX_ERROR);
+            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(2, 1) - MATRIX_2D[2][1]) < MAX_ERROR);
+            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(3, 3) - MATRIX_2D[3][3]) < MAX_ERROR);
+        }
+
+        // Test 3D matrix constructor /////
+        {
+            final float[][][] MATRIX_3D = {
+                {   {0.00f, 0.01f, 0.02f},
+                    {0.10f, 0.11f, 0.12f},
+                    {0.20f, 0.21f, 0.22f},
+                },
+
+                {   {1.00f, 1.01f, 1.02f},
+                    {1.10f, 1.11f, 1.12f},
+                    {1.20f, 1.21f, 1.22f},
+                },
+
+                {   {2.00f, 2.01f, 2.02f},
+                    {2.10f, 2.11f, 2.12f},
+                    {2.20f, 2.21f, 2.22f},
+                },
+            };
+
+            RawMarkovChain firstOrder = new RawMarkovChain(MATRIX_3D);
+
+            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(0, 0, 0) - MATRIX_3D[0][0][0]) < MAX_ERROR);
+            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(2, 0, 1) - MATRIX_3D[2][0][1]) < MAX_ERROR);
+            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(2, 2, 2) - MATRIX_3D[2][2][2]) < MAX_ERROR);
+        }
+    }
+
+    /**
+     * Tests if an exception is thrown for an invalid state input
+     */
+    @Test
+    public void invalidStateInputTest() {
+        RawMarkovChain chain = new RawMarkovChain(1, 4, randomTransitionArray(1, 4)[0]);
+        chain.normalizeProbabilities();
+
+        try {
+            chain.getProbability(0, 4);
+            fail("Exception should have been thrown");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // test passed
+        }
+
+        try {
+            chain.getProbability(-1, 3);
+            fail("Exception should have been thrown");
+        }
+        catch (IllegalArgumentException e)
+        {
+            // test passed
+        }
+    }
+
+    /**
+     * Tests if the normalization correctly handles
+     * a transition matrix with only zeros.
+     */
+    @Test
+    public void testZeroMatrixNormalization() {
+        final float[][] TRANSITION_MATRIX = {
+            {0f, 0f, 0f},
+            {0f, 0f, 0f},
+            {0f, 0f, 0f}
+        };
+
+        RawMarkovChain chain = new RawMarkovChain(TRANSITION_MATRIX);
+        chain.normalizeProbabilities();
+
+        final float EXPECTED = 1.0f / 3;
+        final float EPSILON = 1.0e-5f;
+        assertTrue(TeraMath.fastAbs(chain.getProbability(0, 0) - EXPECTED) < EPSILON);
+        assertTrue(TeraMath.fastAbs(chain.getProbability(1,2) - EXPECTED) < EPSILON);
+        assertTrue(TeraMath.fastAbs(chain.getProbability(2,2) - EXPECTED) < EPSILON);
+    }
+
+    private void ConstructorTest(final int order, final int states) {
+        final String FAILURE_LOCATION_FORMAT = "order=%s , states=%s , i=%s ::";
+
+        final float[][] probabilities = randomTransitionArray(order, states);
+        final float[] constructorInput = probabilities[0];
+        final float[] normalizedInput = probabilities[1];
+        final float MAX_ERROR = 1.0e-4f;
+
+        RawMarkovChain markovChain = new RawMarkovChain(order, states, constructorInput);
+        for(int i = 0; i < constructorInput.length; i++) {
             int[] stateArray = indexToStates(order, states, i);
-            assert(TeraMath.fastAbs(probabilities[1][i] - markovChain.getProbability(stateArray)) < MAX_ERROR );
+            assertTrue(
+                String.format(FAILURE_LOCATION_FORMAT, order, states, i) +
+                " expected: " + constructorInput[i] +
+                ", actual: " + markovChain.getProbability(stateArray),
+                TeraMath.fastAbs(constructorInput[i] - markovChain.getProbability(stateArray)) < MAX_ERROR
+            );
+        }
+
+        markovChain.normalizeProbabilities();
+        for(int i = 0; i < probabilities[1].length; i++) {
+            int[] stateArray = indexToStates(order, states, i);
+            assertTrue(
+                String.format(FAILURE_LOCATION_FORMAT, order, states, i) +
+                " expected: " + normalizedInput[i] +
+                ", actual: " + markovChain.getProbability(stateArray),
+                TeraMath.fastAbs(normalizedInput[i] - markovChain.getProbability(stateArray)) < MAX_ERROR
+            );
         }
     }
 
@@ -82,6 +222,7 @@ public class RawMarkovChainTest {
                     skipNTransitionArray(n, order, states);
 
         RawMarkovChain chain = new RawMarkovChain(order, states, props2A);
+        chain.normalizeProbabilities();
 
         LinkedList<Integer> previousStates = new LinkedList<>();
 
@@ -163,7 +304,7 @@ public class RawMarkovChainTest {
         int nextPower = nrOfStates;
 
         for(int ord = 0; ord <= order; ord++, currentPow = nextPower, nextPower *= nrOfStates) {
-            stateArray[ord] = index / currentPow % nextPower;
+            stateArray[stateArray.length - ord - 1] = (index % nextPower) / currentPow ;
         }
 
         return stateArray;

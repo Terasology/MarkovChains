@@ -23,6 +23,20 @@ import com.google.common.base.Preconditions;
  */
 public abstract class MarkovChainBase {
 
+    // public //////////////////////////////////////////////////////////
+
+    /**
+     * The order of the Markov Chain
+     */
+    public final int ORDER;
+
+    /**
+     * The number of states in the Markov Chain.
+     */
+    public final int NR_OF_STATES;
+
+    // protected ///////////////////////////////////////////////////////
+
     /**
      * Constructs a Markov Chain of any order and any nr of states.
      *
@@ -30,9 +44,9 @@ public abstract class MarkovChainBase {
      *      i.e. how many (previous) states are considered to compute the next.
      * @param nrOfStates The nr of states (>=1).
      */
-    public MarkovChainBase(final int order, final int nrOfStates) {
+    protected MarkovChainBase(final int order, final int nrOfStates) {
         final String STATE_ARGUMENT_EXCEPTION_MESSAGE = "nrOfStates=%s, should be >= 1",
-                     ORDER_ARGUMENT_EXCEPTION_MESSAGE = "order=%s, should be >= 1";
+                ORDER_ARGUMENT_EXCEPTION_MESSAGE = "order=%s, should be >= 1";
 
         Preconditions.checkArgument(
                 nrOfStates > 0,
@@ -50,6 +64,36 @@ public abstract class MarkovChainBase {
         this.NR_OF_STATES = nrOfStates;
     }
 
-    public final int ORDER;
-    public final int NR_OF_STATES;
+    protected static float[] flatten(final float[][][] probabilities) {
+        final int WIDTH  = probabilities.length;
+        final int HEIGHT = probabilities[0].length;
+        final int DEPTH = probabilities[0][0].length;
+
+        float[] flattened = new float[WIDTH * HEIGHT * DEPTH];
+
+        for(int i=0 , x=0; x < WIDTH; x++) {
+            for(int y=0; y < HEIGHT; y++) {
+                for(int z=0; z < DEPTH; z++, i++) {
+                    flattened[i] = probabilities[x][y][z];
+                }
+            }
+        }
+
+        return flattened;
+    }
+
+    protected static float[] flatten(final float[][] probabilities) {
+        final int WIDTH  = probabilities.length;
+        final int HEIGHT = probabilities[0].length;
+
+        float[] flattened = new float[WIDTH * HEIGHT];
+
+        for(int i=0 , x=0; x < WIDTH; x++) {
+            for(int y=0; y < HEIGHT; y++, i++) {
+                flattened[i] = probabilities[x][y];
+            }
+        }
+
+        return flattened;
+    }
 }
