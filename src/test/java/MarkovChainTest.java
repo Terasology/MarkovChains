@@ -16,12 +16,7 @@
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.terasology.markovChains.MarkovChain;
-import org.terasology.math.TeraMath;
 import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.MersenneRandom;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static junit.framework.Assert.*;
 

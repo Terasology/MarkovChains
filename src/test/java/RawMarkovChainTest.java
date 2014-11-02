@@ -1,10 +1,10 @@
 import org.junit.Test;
-import org.terasology.markovChains.MarkovChain;
 import org.terasology.markovChains.RawMarkovChain;
 import org.terasology.math.TeraMath;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 
+import java.lang.reflect.Method;
 import java.util.LinkedList;
 
 import static junit.framework.Assert.*;
@@ -161,6 +161,61 @@ public class RawMarkovChainTest {
         assertTrue(TeraMath.fastAbs(chain.getProbability(0, 0) - EXPECTED) < EPSILON);
         assertTrue(TeraMath.fastAbs(chain.getProbability(1,2) - EXPECTED) < EPSILON);
         assertTrue(TeraMath.fastAbs(chain.getProbability(2,2) - EXPECTED) < EPSILON);
+    }
+
+    /**
+     * Tests if the distribution of next() is the same as the transition matrix would suggest.
+     */
+    @Test
+    public void testNextDistribution() {
+        final RawMarkovChain rawMarkovChain = new RawMarkovChain(3, 4, randomTransitionArray(3,4)[0]);
+        rawMarkovChain.normalizeProbabilities();
+
+        final int NR_OF_SAMPLES = 1000;
+
+        testNextDistribution(rawMarkovChain, NR_OF_SAMPLES, 0, 0, 0);
+        testNextDistribution(rawMarkovChain, NR_OF_SAMPLES, 1, 3, 2);
+        testNextDistribution(rawMarkovChain, NR_OF_SAMPLES, 3, 2, 2);
+        testNextDistribution(rawMarkovChain, NR_OF_SAMPLES, 3, 3, 3);
+    }
+
+    private void testNextDistribution(RawMarkovChain markovChain, int NR_OF_SAMPLES, int ... history) {
+        int[] hits = new int[4];
+
+        for(int i = 0; i < NR_OF_SAMPLES; i++) {
+            hits[markovChain.getNext(randomNumberGenerator.nextFloat(), history)]++;
+        }
+
+        for(int i = 0; i < 4; i++) {
+            float expected = markovChain.getProbability(
+                    history[0],
+                    history[1],
+                    history[2],
+                    i);
+            float actual = ((float)hits[i]) / NR_OF_SAMPLES;
+            assertTrue(TeraMath.fastAbs(expected - actual) < 0.125f);
+        }
+    }
+
+    @Test
+    public void testPrivateToIndex() {
+        RawMarkovChain markovChain = new RawMarkovChain(3, 4, skipNTransitionArray(1, 3, 4));
+
+        try {
+            Method method = RawMarkovChain.class.getDeclaredMethod("toIndex", int[].class);
+            method.setAccessible(true);
+
+            assertEquals(  0, method.invoke(markovChain, new int[]{0,0,0,0}));
+            assertEquals(  1, method.invoke(markovChain, new int[]{0,0,0,1}));
+            assertEquals(  4, method.invoke(markovChain, new int[]{0,0,1,0}));
+            assertEquals( 16, method.invoke(markovChain, new int[]{0,1,0,0}));
+            assertEquals( 64, method.invoke(markovChain, new int[]{1,0,0,0}));
+            assertEquals( 85, method.invoke(markovChain, new int[]{1,1,1,1}));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            fail();
+        }
     }
 
     private void ConstructorTest(final int order, final int states) {

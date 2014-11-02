@@ -16,6 +16,7 @@
 package org.terasology.markovChains;
 
 import com.google.common.base.Preconditions;
+import org.terasology.math.TeraMath;
 
 /**
  * Abstract base class for Markov Chain implementations.
@@ -95,5 +96,16 @@ public abstract class MarkovChainBase {
         }
 
         return flattened;
+    }
+
+    /**
+     * Convenience method to create a transition array of the right size for
+     * a given order and nr of states.
+     * @param order The order of the Markov chain
+     * @param nrOfStates The nr of states in the Markov chain
+     * @return The transition array, filled with zeros.
+     */
+    public static float[] createTransitionArray(final int order, final int nrOfStates) {
+        return new float[TeraMath.pow(nrOfStates, order + 1)];
     }
 }

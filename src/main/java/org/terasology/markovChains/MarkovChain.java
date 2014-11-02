@@ -173,6 +173,22 @@ public class MarkovChain<S> extends MarkovChainBase {
      * @param random The random number generator used for determining next states.
      */
     public MarkovChain(int order, List<S> states, float[] transitionProbabilities, Random random) {
+        this(order, states, new RawMarkovChain(order, states.size(), transitionProbabilities), random);
+    }
+
+    /**
+     * Wraps a MarkovChain interface over a {@link RawMarkovChain}.
+     *
+     *  <b>Note:</b> In most cases you won't need to construct a {@link RawMarkovChain} before constructing
+     *  a {@link MarkovChain}. Use one of the other constructors where possible.
+     *
+     * @param order The order (>= 1) of the Markov Chain,
+     *      i.e. how many (previous) states are considered to compute the next.
+     * @param states The states in the chain.
+     * @param rawMarkovChain The RawMarkovChain controlling the MarkovChain.
+     * @param random The random number generator used for determining next states.
+     */
+    public MarkovChain(int order, List<S> states, RawMarkovChain rawMarkovChain, Random random) {
         super(order, states.size());
 
         Preconditions.checkArgument(
@@ -181,16 +197,13 @@ public class MarkovChain<S> extends MarkovChainBase {
         );
 
         this.states = ImmutableList.copyOf(states);
-        this.rawMarkovChain = new RawMarkovChain(ORDER, NR_OF_STATES, transitionProbabilities);
+        this.rawMarkovChain = rawMarkovChain;
         this.rawMarkovChain.normalizeProbabilities();
         this.random = random;
         this.history = new LinkedList<S>();
         this.rawHistory = new LinkedList<Integer>();
 
-        while(history.size() <= ORDER) {
-            history.push(states.get(0));
-            rawHistory.push(0);
-        }
+        resetHistory();
     }
 
     // public interface //////////////////////////////////////////////////
@@ -212,6 +225,20 @@ public class MarkovChain<S> extends MarkovChainBase {
         rawHistory.addLast(RAW_NEXT);
 
         return NEXT;
+    }
+
+    /**
+     * Resets the history.
+     */
+    public void resetHistory() {
+        while(history.size() > 0) {
+            history.remove();
+            rawHistory.remove();
+        }
+        while(history.size() <= ORDER) {
+            history.push(states.get(0));
+            rawHistory.push(0);
+        }
     }
 
     /**

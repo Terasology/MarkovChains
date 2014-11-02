@@ -18,6 +18,7 @@ package org.terasology.markovChains;
 import com.google.common.base.Preconditions;
 import org.terasology.math.TeraMath;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -149,14 +150,14 @@ public class RawMarkovChain extends MarkovChainBase {
     public int getNext(float randomNumber, int ... states ) {
         // error messages ///////////////////////////
         final String RANDOM_NUMBER_OUT_OF_RANGE_MESSAGE =
-                "randomNumber = %s; must be a nr >= 0 and < 1.0";
+                "randomNumber = %s; must be a nr >= 0 and <= 1.0";
 
         final String NOT_NORMALIZED_MESSAGE =
                 "Object has not been normalized";
 
         // check preconditions //////////////////////
         Preconditions.checkArgument(
-                0 <= randomNumber && randomNumber < 1.0,
+                0 <= randomNumber && randomNumber <= 1.0,
                 RANDOM_NUMBER_OUT_OF_RANGE_MESSAGE,
                 randomNumber
         );
@@ -263,6 +264,19 @@ public class RawMarkovChain extends MarkovChainBase {
         return isNormalized;
     }
 
+
+
+
+    // package private /////////////////////////////////////////////////
+
+    /**
+     * Returns a copy of the transition probability array.
+     * @return
+     */
+    float[] getTransitionProbabilityArray() {
+        return Arrays.copyOf(transitionProbabilityArray, transitionProbabilityArray.length);
+    }
+
     // private /////////////////////////////////////////////////////////
 
     private int toIndex(final int ... states) {
@@ -297,6 +311,7 @@ public class RawMarkovChain extends MarkovChainBase {
                 for (int i = START_INDEX; i <= END_INDEX; i++) {
                     transitionProbabilityArray[i] /= SUM_OF_PROBABILITIES;
                 }
+
             } else {
                 float probability = 1.0f / NR_OF_STATES;
                 for (int i = START_INDEX; i <= END_INDEX; i++) {
