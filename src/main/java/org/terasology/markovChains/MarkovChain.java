@@ -200,16 +200,16 @@ public class MarkovChain<S> extends MarkovChainBase {
      * @return The next state.
      */
     public S next() {
-        history.removeLast();
-        rawHistory.removeLast();
+        history.removeFirst();
+        rawHistory.removeFirst();
 
         final float RANDOM_NUMBER = random.nextFloat();
         final int RAW_NEXT = rawMarkovChain.getNext(RANDOM_NUMBER, rawHistory);
 
         final S NEXT = states.get(RAW_NEXT);
 
-        history.addFirst(NEXT);
-        rawHistory.addFirst(RAW_NEXT);
+        history.addLast(NEXT);
+        rawHistory.addLast(RAW_NEXT);
 
         return NEXT;
     }
@@ -219,7 +219,7 @@ public class MarkovChain<S> extends MarkovChainBase {
      * @return The current state.
      */
     public S current() {
-        return history.get(0);
+        return history.get(history.size() - 1);
     }
 
     /**
@@ -227,7 +227,7 @@ public class MarkovChain<S> extends MarkovChainBase {
      * @return The previous state.
      */
     public S lookBack() {
-        return history.get(1);
+        return history.get(history.size() - 2);
     }
 
     /**
@@ -244,7 +244,7 @@ public class MarkovChain<S> extends MarkovChainBase {
                 ILLEGAL_N_MESSAGE, ORDER, n
         );
 
-        return history.get(n);
+        return history.get(history.size() - n - 1);
     }
 
 
@@ -255,7 +255,17 @@ public class MarkovChain<S> extends MarkovChainBase {
 
     // private /////////////////////////////////////////////////////////
 
+    /**
+     * History of states ordered from least recent to most recent.
+     * history.first() is the nth previous state, where n={@link #ORDER}
+     * history.last() is the current state.
+     */
     private final LinkedList<S> history;
+
+    /**
+     * The state indices for the states in {@link #history},
+     * such that for all x: states.get(rawHistory(x)) == history(x)
+     */
     private final LinkedList<Integer> rawHistory;
 
     private final Random random;
