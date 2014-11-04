@@ -21,6 +21,8 @@ import org.terasology.math.TeraMath;
 /**
  * Abstract base class for Markov Chain implementations.
  * Defines a minimal common interface.
+ * @author Linus van Elswijk
+ * @version 1.00
  */
 public abstract class MarkovChainBase {
 
@@ -28,15 +30,17 @@ public abstract class MarkovChainBase {
 
     /**
      * The order of the Markov Chain
+     *
+     * @since 1.00
      */
-    public final int ORDER;
+    public final int order;
 
     /**
      * The number of states in the Markov Chain.
+     *
+     * @since 1.00
      */
-    public final int NR_OF_STATES;
-
-    // protected ///////////////////////////////////////////////////////
+    public final int nrOfStates;
 
     /**
      * Constructs a Markov Chain of any order and any nr of states.
@@ -44,58 +48,27 @@ public abstract class MarkovChainBase {
      * @param order The order (>= 1) of the Markov Chain,
      *      i.e. how many (previous) states are considered to compute the next.
      * @param nrOfStates The nr of states (>=1).
+     *
+     * @since 1.00
      */
     protected MarkovChainBase(final int order, final int nrOfStates) {
-        final String STATE_ARGUMENT_EXCEPTION_MESSAGE = "nrOfStates=%s, should be >= 1",
-                ORDER_ARGUMENT_EXCEPTION_MESSAGE = "order=%s, should be >= 1";
+        final String stateArgumentExceptionFormat = "nrOfStates=%s, should be >= 1";
+        final String orderArgumentExceptionFormat = "order=%s, should be >= 1";
 
         Preconditions.checkArgument(
                 nrOfStates > 0,
-                STATE_ARGUMENT_EXCEPTION_MESSAGE,
+                stateArgumentExceptionFormat,
                 nrOfStates
         );
 
         Preconditions.checkArgument(
                 order > 0,
-                ORDER_ARGUMENT_EXCEPTION_MESSAGE,
+                orderArgumentExceptionFormat,
                 order
         );
 
-        this.ORDER = order;
-        this.NR_OF_STATES = nrOfStates;
-    }
-
-    protected static float[] flatten(final float[][][] probabilities) {
-        final int WIDTH  = probabilities.length;
-        final int HEIGHT = probabilities[0].length;
-        final int DEPTH = probabilities[0][0].length;
-
-        float[] flattened = new float[WIDTH * HEIGHT * DEPTH];
-
-        for(int i=0 , x=0; x < WIDTH; x++) {
-            for(int y=0; y < HEIGHT; y++) {
-                for(int z=0; z < DEPTH; z++, i++) {
-                    flattened[i] = probabilities[x][y][z];
-                }
-            }
-        }
-
-        return flattened;
-    }
-
-    protected static float[] flatten(final float[][] probabilities) {
-        final int WIDTH  = probabilities.length;
-        final int HEIGHT = probabilities[0].length;
-
-        float[] flattened = new float[WIDTH * HEIGHT];
-
-        for(int i=0 , x=0; x < WIDTH; x++) {
-            for(int y=0; y < HEIGHT; y++, i++) {
-                flattened[i] = probabilities[x][y];
-            }
-        }
-
-        return flattened;
+        this.order = order;
+        this.nrOfStates = nrOfStates;
     }
 
     /**
@@ -104,8 +77,61 @@ public abstract class MarkovChainBase {
      * @param order The order of the Markov chain
      * @param nrOfStates The nr of states in the Markov chain
      * @return The transition array, filled with zeros.
+     *
+     * @since 1.00
      */
     public static float[] createTransitionArray(final int order, final int nrOfStates) {
         return new float[TeraMath.pow(nrOfStates, order + 1)];
     }
+
+    /**
+     * Flattens a 3D transition matrix into a (1D) transition array)
+     * @param probabilities The transition matrix.
+     * @return The equivalent transition array.
+     *
+     * @since 1.00
+     */
+    protected static float[] flatten(final float[][][] probabilities) {
+        final int width  = probabilities.length;
+        final int height = probabilities[0].length;
+        final int depth = probabilities[0][0].length;
+
+        float[] flattened = new float[width * height * depth];
+
+        int i = 0;
+        for (float[][] slice : probabilities) {
+            for (float[] row : slice) {
+                for (float probability : row) {
+                    flattened[i] = probability;
+                    i++;
+                }
+            }
+        }
+
+        return flattened;
+    }
+
+    /**
+     * Flattens a 2D transition matrix into a (1D) transition array)
+     * @param probabilities The transition matrix.
+     * @return The equivalent transition array.
+     * @since 1.00
+     */
+    protected static float[] flatten(final float[][] probabilities) {
+        final int width  = probabilities.length;
+        final int height = probabilities[0].length;
+
+        float[] flattened = new float[width * height];
+
+        int i = 0;
+        for (float[] row : probabilities) {
+            for (float probability : row) {
+                flattened[i] = probability;
+                i++;
+            }
+        }
+
+        return flattened;
+    }
+
 }

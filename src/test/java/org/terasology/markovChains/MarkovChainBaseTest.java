@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.terasology.markovChains;
 
 import org.junit.Test;
-import org.terasology.markovChains.MarkovChainBase;
-import org.terasology.markovChains.RawMarkovChain;
 
 import static org.junit.Assert.fail;
 
 /**
- * Created by Linus on 2-11-2014.
+ * Tests {@link org.terasology.markovChains.MarkovChainBase}
+ * @author Linus van Elswijk
  */
 public class MarkovChainBaseTest {
 
@@ -31,21 +31,22 @@ public class MarkovChainBaseTest {
      */
     @Test
     public void testCreateTransitionArray() {
-        final int ORDER = 0, NR_OF_STATES = 1;
-        final int[][] ORDER_AND_STATE_NR_PAIRS = {
+        final int order = 0;
+        final int nrOfStates = 1;
+        final int[][] orderAndStateNrPairs = {
                 {1, 1},
                 {1, 9},
                 {3, 4},
                 {5, 3}
         };
 
-        for(int[] param: ORDER_AND_STATE_NR_PAIRS) {
+        for (int[] param: orderAndStateNrPairs) {
             try {
                 RawMarkovChain markovChain =
                         new RawMarkovChain(
-                                param[ORDER],
-                                param[NR_OF_STATES],
-                                MarkovChainBase.createTransitionArray(param[ORDER], param[NR_OF_STATES])
+                                param[order],
+                                param[nrOfStates],
+                                MarkovChainBase.createTransitionArray(param[order], param[nrOfStates])
                         );
             } catch (Exception e) {
                 fail("Constructor threw an exception / transition array was not accepted.");

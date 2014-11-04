@@ -13,20 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.terasology.markovChains;
+
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
-import org.terasology.markovChains.MarkovChain;
 import org.terasology.utilities.random.FastRandom;
 
 import static junit.framework.Assert.*;
 
+/**
+ * Tests {@link org.terasology.markovChains.MarkovChain}
+ * @author Linus van Elswijk
+ */
 public class MarkovChainTest {
     // Markov Chain definition /////
 
-    private final static ImmutableList<Character> STATES =
+    private static final ImmutableList<Character> STATES =
             ImmutableList.of('0', 'M', 'K', 'A', 'O', 'R', 'V');
 
-    private final static float[][] TRANSITION_MATRIX_2D =  {
+    private static final float[][] TRANSITION_MATRIX_2D =  {
             //   0  M  K  A  O  R  V
             {0, 1, 0, 0, 0, 0, 0}, //0 -> M
             {0, 0, 0, 1, 0, 0, 0}, //M -> A
@@ -37,7 +42,7 @@ public class MarkovChainTest {
             {0, 0, 0, 0, 0, 0, 1}, //V -> V
     };
 
-    private final static float [][][] TRANSITION_MATRIX_3D = {
+    private static final float [][][] TRANSITION_MATRIX_3D = {
             TRANSITION_MATRIX_2D, //0
             TRANSITION_MATRIX_2D, //M
             TRANSITION_MATRIX_2D, //K
@@ -54,49 +59,49 @@ public class MarkovChainTest {
     @Test
     public void deterministicChainTest() {
 
-        final String EXPECTED_OUTPUT = "MARKOVVV";
+        final String expectedOutput = "MARKOVVV";
 
-        MarkovChain<Character> markovChains[] = new MarkovChain[] {
+        MarkovChain[] markovChains = new MarkovChain[] {
             //Order 1
-            new MarkovChain<Character>(STATES, TRANSITION_MATRIX_2D),
-            new MarkovChain<Character>(STATES, TRANSITION_MATRIX_2D, 10983),
-            new MarkovChain<Character>(STATES, TRANSITION_MATRIX_2D, new FastRandom()),
+            new MarkovChain<>(STATES, TRANSITION_MATRIX_2D),
+            new MarkovChain<>(STATES, TRANSITION_MATRIX_2D, 10983),
+            new MarkovChain<>(STATES, TRANSITION_MATRIX_2D, new FastRandom()),
 
             //Order 2
-            new MarkovChain<Character>(STATES, TRANSITION_MATRIX_3D),
-            new MarkovChain<Character>(STATES, TRANSITION_MATRIX_3D, 46360),
-            new MarkovChain<Character>(STATES, TRANSITION_MATRIX_3D, new FastRandom()),
+            new MarkovChain<>(STATES, TRANSITION_MATRIX_3D),
+            new MarkovChain<>(STATES, TRANSITION_MATRIX_3D, 46360),
+            new MarkovChain<>(STATES, TRANSITION_MATRIX_3D, new FastRandom()),
         };
 
-        for(MarkovChain markovChain: markovChains) {
-            deterministicChainTest(markovChain, EXPECTED_OUTPUT);
+        for (MarkovChain markovChain: markovChains) {
+            deterministicChainTest(markovChain, expectedOutput);
         }
     }
 
     private void deterministicChainTest(final MarkovChain<Character> markovChain,
-                                        final String EXPECTED_OUTPUT
+                                        final String expectedOutput
     ) {
         StringBuilder produced = new StringBuilder();
 
-        for(int i = 0; i < EXPECTED_OUTPUT.length(); i++) {
+        for (int i = 0; i < expectedOutput.length(); i++) {
             // production
             produced.append(markovChain.next());
 
             // test current()
-            assertEquals(produced.charAt(i), (char)markovChain.current());
+            assertEquals(produced.charAt(i), (char) markovChain.current());
 
             // test lookBack()
-            if(i > 0) {
+            if (i > 0) {
                 assertEquals(produced.charAt(i - 1), (char) markovChain.lookBack());
             }
 
             //test lookBack(n)
-            for(int j = 0; j < Math.min(i, markovChain.ORDER); j++) {
-                assertEquals(produced.charAt(i-j), (char)markovChain.lookBack(j));
+            for (int j = 0; j < Math.min(i, markovChain.order); j++) {
+                assertEquals(produced.charAt(i - j), (char) markovChain.lookBack(j));
             }
         }
 
-        assertEquals(EXPECTED_OUTPUT, produced.toString());
+        assertEquals(expectedOutput, produced.toString());
     }
 
 }

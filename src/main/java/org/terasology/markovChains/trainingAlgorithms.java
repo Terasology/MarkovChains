@@ -16,45 +16,66 @@
 package org.terasology.markovChains;
 
 import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
 
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 
 /**
  * A collection of algorithms that can create and train a Markov Chain from training data.
  *
- * Created by Linus on 2-11-2014.
+ * @version 1.00
+ * @author Linus van Elswijk
  */
 public final class TrainingAlgorithms {
 
+    private TrainingAlgorithms() throws IllegalAccessException {
+        throw new IllegalAccessException();
+    }
+
+    /**
+     * Creates a {@link MarkovChain}, trained on a list of sample sequences.
+     *
+     * The samples will be used to calculate the probability of generating a state, given
+     * a certain history of previously generated states.
+     * The resulting Markov chain will be able to produce random sequences that are similar to
+     * the samples.
+     *
+     * @param order The order of the trained markov chain.
+     * @param states The list of possible states.
+     * @param sampleSequences The examples used for training.
+     * @param endState Ending a sequence is will be represented as going to this state. Use null if you
+     *                 don't want to use a termination state.
+     * @param <S> The type of the states.
+     * @return The trained {@link MarkovChain}.
+     *
+     * @since 1.00
+     */
     public static <S> MarkovChain<S> forwardAlgorithm(final int order,
                                                       final List<S> states,
                                                       S[][] sampleSequences,
                                                       S endState
     ) {
         // preparation
-        final int NR_OF_STATES = states.size();
-        final float[] transitionArray = RawMarkovChain.createTransitionArray(order, NR_OF_STATES);
+        final int nrOfStates = states.size();
+        final float[] transitionArray = RawMarkovChain.createTransitionArray(order, nrOfStates);
 
         RawMarkovChain rawMarkovChain =
-                new RawMarkovChain(order, NR_OF_STATES, transitionArray);
-
-        Random random = new FastRandom();
+                new RawMarkovChain(order, nrOfStates, transitionArray);
 
         // forward algorithm body
 
-        for(S[] sequence: sampleSequences) {
+        for (S[] sequence: sampleSequences) {
             // sequence preparation
-            LinkedList<Integer> history = new LinkedList<>();
+            Deque<Integer> history = new LinkedList<>();
 
-            while(history.size() < (order)) {
+            while (history.size() < (order)) {
                 history.add(0);
             }
 
             // process sequence
 
-            for(S state : sequence) {
+            for (S state : sequence) {
                 history.addLast(states.indexOf(state));
 
                 adjustProbability(rawMarkovChain, history, +1f);
@@ -62,7 +83,7 @@ public final class TrainingAlgorithms {
                 history.removeFirst();
             }
 
-            if(endState != null) {
+            if (endState != null) {
                 history.addLast(states.indexOf(endState));
 
                 adjustProbability(rawMarkovChain, history, +1f);
@@ -73,28 +94,24 @@ public final class TrainingAlgorithms {
 
         rawMarkovChain.normalizeProbabilities();
 
-        return new MarkovChain<S>(order, states, rawMarkovChain, new FastRandom() );
+        return new MarkovChain<>(order, states, rawMarkovChain, new FastRandom());
     }
 
-    private static void adjustProbability(RawMarkovChain markovChain, List<Integer> states, float delta) {
+    private static void adjustProbability(RawMarkovChain markovChain, Deque<Integer> states, float delta) {
         int[] stateArray = toIntArray(states);
 
         markovChain.setProbability(markovChain.getProbability(stateArray) + delta, stateArray);
     }
 
-    private static int[] toIntArray(List<Integer> states) {
-        LinkedList<Integer> intObjects = new LinkedList<>(states);
+    private static int[] toIntArray(Deque<Integer> states) {
+        Deque<Integer> intObjects = new LinkedList<>(states);
 
         int[] intArray = new int[intObjects.size()];
 
-        for(int i = 0; i < intArray.length; i++) {
+        for (int i = 0; i < intArray.length; i++) {
             intArray[i] = intObjects.removeFirst();
         }
 
         return intArray;
-    }
-
-    private TrainingAlgorithms() {
-        throw new RuntimeException("TrainingAlgorithm should not be instantiated");
     }
 }
