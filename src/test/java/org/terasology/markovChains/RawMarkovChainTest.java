@@ -20,6 +20,7 @@ import org.terasology.math.TeraMath;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Deque;
 import java.util.LinkedList;
@@ -232,7 +233,7 @@ public class RawMarkovChainTest {
             assertEquals(64, method.invoke(markovChain, (Object) new int[]{1, 0, 0, 0}));
             assertEquals(85, method.invoke(markovChain, (Object) new int[]{1, 1, 1, 1}));
 
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException e) {
             fail();
         }
     }

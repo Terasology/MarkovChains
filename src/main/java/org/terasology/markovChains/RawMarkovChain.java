@@ -315,39 +315,38 @@ public class RawMarkovChain extends MarkovChainBase {
         final int endIndex = lastIndex(states);
 
         // normalization //////////////////////////
-        {
-            final float sumOfProbabilities =
-                    sumOfProbabilities(startIndex, endIndex);
 
-            if (sumOfProbabilities > 0f) {
-                for (int i = startIndex; i <= endIndex; i++) {
-                    transitionProbabilityArray[i] /= sumOfProbabilities;
-                }
+        final float sumOfProbabilitiesPreNorm =
+                sumOfProbabilities(startIndex, endIndex);
 
-            } else {
-                float probability = 1.0f / nrOfStates;
-                for (int i = startIndex; i <= endIndex; i++) {
-                    transitionProbabilityArray[i] = probability;
-                }
+        if (sumOfProbabilitiesPreNorm > 0f) {
+            for (int i = startIndex; i <= endIndex; i++) {
+                transitionProbabilityArray[i] /= sumOfProbabilitiesPreNorm;
+            }
+
+        } else {
+            float probability = 1.0f / nrOfStates;
+            for (int i = startIndex; i <= endIndex; i++) {
+                transitionProbabilityArray[i] = probability;
             }
         }
 
         // numerical instability correction ///////
-        {
-            final float sumOfProbabilities =
-                    sumOfProbabilities(startIndex, endIndex);
 
-            if (sumOfProbabilities < 1.0f) { // >1.0f is fine
-                final float error = 1.0f - sumOfProbabilities;
-                int i = endIndex;
+        final float sumOfProbabilitiesPostNorm =
+                sumOfProbabilities(startIndex, endIndex);
 
-                while (transitionProbabilityArray[i] == 0f) {
-                    i--;
-                }
+        if (sumOfProbabilitiesPostNorm < 1.0f) { // >1.0f is fine
+            final float error = 1.0f - sumOfProbabilitiesPostNorm;
+            int i = endIndex;
 
-                transitionProbabilityArray[i] += error;
+            while (transitionProbabilityArray[i] == 0f) {
+                i--;
             }
+
+            transitionProbabilityArray[i] += error;
         }
+
     }
 
     private float sumOfProbabilities(final int startIndex, final int endIndex) {
