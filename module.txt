@@ -1,8 +1,8 @@
 {
     "id" : "MarkovChains",
-    "version" : "0.1.0",
+    "version" : "1.0.0",
     "displayName" : "Markov Chains",
-    "author" : "LinusVE",
-    "description" : "Library module that enables Markov Chains",
+    "author" : "Linus van Elswijk",
+    "description" : "Library module for the production of pseudo-random sequences.",
     "dependencies" : []
 }
