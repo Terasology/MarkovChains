@@ -42,12 +42,11 @@ public class MarkovChainBaseTest {
 
         for (int[] param: orderAndStateNrPairs) {
             try {
-                RawMarkovChain markovChain =
-                        new RawMarkovChain(
-                                param[order],
-                                param[nrOfStates],
-                                MarkovChainBase.createTransitionArray(param[order], param[nrOfStates])
-                        );
+                new RawMarkovChain(
+                        param[order],
+                        param[nrOfStates],
+                        MarkovChainBase.createTransitionArray(param[order], param[nrOfStates])
+                );
             } catch (Exception e) {
                 fail("Constructor threw an exception / transition array was not accepted.");
             }

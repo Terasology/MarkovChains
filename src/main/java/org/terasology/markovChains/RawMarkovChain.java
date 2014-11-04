@@ -163,53 +163,50 @@ public class RawMarkovChain extends MarkovChainBase {
      */
     public int getNext(final float randomNumber, final int ... states) {
         // check preconditions //////////////////////
-        {
-            // error messages ///////////////////////
-            final String randomNumberOutOfRangeFormat =
-                    "randomNumber = %s; must be a nr >= 0 and < 1.0";
+        // error messages ///////////////////////
+        final String randomNumberOutOfRangeFormat =
+                "randomNumber = %s; must be a nr >= 0 and < 1.0";
 
-            final String notNormalizedMessage =
-                    "Object has not been normalized";
+        final String notNormalizedMessage =
+                "Object has not been normalized";
 
-            // checks //////////////////////////////
+        // checks //////////////////////////////
 
-            Preconditions.checkArgument(
-                    0 <= randomNumber && randomNumber < 1.0,
-                    randomNumberOutOfRangeFormat,
-                    randomNumber
-            );
+        Preconditions.checkArgument(
+                0 <= randomNumber && randomNumber < 1.0,
+                randomNumberOutOfRangeFormat,
+                randomNumber
+        );
 
-            checkInputStates(true, 1, states);
+        checkInputStates(true, 1, states);
 
-            Preconditions.checkState(
-                    isNormalized,
-                    notNormalizedMessage
-            );
-        }
+        Preconditions.checkState(
+                isNormalized,
+                notNormalizedMessage
+        );
 
         // method body /////////////////////////////
-        {
-            final int startIndex = toIndex(states);
-            final int endIndex = lastIndex(states);
+        final int startIndex = toIndex(states);
+        final int endIndex = lastIndex(states);
 
-            int i;
-            float leftOver = randomNumber;
-            for (i = startIndex; i < endIndex; i++) {
-                leftOver -= transitionProbabilityArray[i];
-                if (leftOver < 0) {
-                    return i % nrOfStates;
-                }
+        int i;
+        float leftOver = randomNumber;
+        for (i = startIndex; i < endIndex; i++) {
+            leftOver -= transitionProbabilityArray[i];
+            if (leftOver < 0) {
+                return i % nrOfStates;
             }
-
-            return i % nrOfStates;
-            /* NOTE:
-             * There's a tiny possibility that transitionProbabilityArray[i] == 0f,
-             * because of numerical instability.
-             * Therefore we roll back to the first non zero element in the array.
-             * The normalization process makes sure that there is at least one such element, before
-             * i == startIndex.
-             */
         }
+
+        return i % nrOfStates;
+
+        /* NOTE:
+         * There's a tiny possibility that transitionProbabilityArray[i] == 0f,
+         * because of numerical instability.
+         * Therefore we roll back to the first non zero element in the array.
+         * The normalization process makes sure that there is at least one such element, before
+         * i == startIndex.
+         */
     }
 
     /**
@@ -240,21 +237,19 @@ public class RawMarkovChain extends MarkovChainBase {
      */
     public RawMarkovChain setProbability(final float probability, final int ... states) {
         // check preconditions //////////////////////
-        {
-            // error messages ///////////////////////
-            final String invalidProbability =
-                    "Invalid probability value: %s";
+        // error messages ///////////////////////
+        final String invalidProbability =
+                "Invalid probability value: %s";
 
-            // checks //////////////////////////////
+        // checks //////////////////////////////
 
-            Preconditions.checkArgument(
-                    probability >= 0f,
-                    invalidProbability,
-                    probability
-            );
+        Preconditions.checkArgument(
+                probability >= 0f,
+                invalidProbability,
+                probability
+        );
 
-            checkInputStates(false, 1, states);
-        }
+        checkInputStates(false, 1, states);
 
         // method body /////////////////////////////
         transitionProbabilityArray[toIndex(states)] = probability;

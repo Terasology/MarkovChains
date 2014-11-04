@@ -92,49 +92,47 @@ public class RawMarkovChainTest {
         final float maxError = 1.0e-4f;
 
         // Test 2D matrix constructor /////
-        {
-            final float[][] matrix2D = new float [][] {
-                    {0.0f, 0.1f, 0.2f, 0.3f},
-                    {1.0f, 1.1f, 1.2f, 1.3f},
-                    {2.0f, 2.1f, 2.2f, 2.3f},
-                    {3.0f, 3.1f, 3.2f, 3.3f}
-            };
+        final float[][] matrix2D = new float [][] {
+                {0.0f, 0.1f, 0.2f, 0.3f},
+                {1.0f, 1.1f, 1.2f, 1.3f},
+                {2.0f, 2.1f, 2.2f, 2.3f},
+                {3.0f, 3.1f, 3.2f, 3.3f}
+        };
 
-            RawMarkovChain firstOrder = new RawMarkovChain(matrix2D);
+        RawMarkovChain firstOrder = new RawMarkovChain(matrix2D);
 
-            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(0, 0) - matrix2D[0][0]) < maxError);
-            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(2, 1) - matrix2D[2][1]) < maxError);
-            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(3, 3) - matrix2D[3][3]) < maxError);
-        }
+        assertTrue(TeraMath.fastAbs(firstOrder.getProbability(0, 0) - matrix2D[0][0]) < maxError);
+        assertTrue(TeraMath.fastAbs(firstOrder.getProbability(2, 1) - matrix2D[2][1]) < maxError);
+        assertTrue(TeraMath.fastAbs(firstOrder.getProbability(3, 3) - matrix2D[3][3]) < maxError);
+
 
         // Test 3D matrix constructor /////
-        {
-            final float[][][] matrix3D = new float[][][] {
-                    new float[][] {
-                            {0.00f, 0.01f, 0.02f},
-                            {0.10f, 0.11f, 0.12f},
-                            {0.20f, 0.21f, 0.22f},
-                    },
 
-                    new float[][] {
-                            {1.00f, 1.01f, 1.02f},
-                            {1.10f, 1.11f, 1.12f},
-                            {1.20f, 1.21f, 1.22f},
-                    },
+        final float[][][] matrix3D = new float[][][] {
+                new float[][] {
+                        {0.00f, 0.01f, 0.02f},
+                        {0.10f, 0.11f, 0.12f},
+                        {0.20f, 0.21f, 0.22f},
+                },
 
-                    new float[][] {
-                            {2.00f, 2.01f, 2.02f},
-                            {2.10f, 2.11f, 2.12f},
-                            {2.20f, 2.21f, 2.22f},
-                    },
-            };
+                new float[][] {
+                        {1.00f, 1.01f, 1.02f},
+                        {1.10f, 1.11f, 1.12f},
+                        {1.20f, 1.21f, 1.22f},
+                },
 
-            RawMarkovChain firstOrder = new RawMarkovChain(matrix3D);
+                new float[][] {
+                        {2.00f, 2.01f, 2.02f},
+                        {2.10f, 2.11f, 2.12f},
+                        {2.20f, 2.21f, 2.22f},
+                },
+        };
 
-            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(0, 0, 0) - matrix3D[0][0][0]) < maxError);
-            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(2, 0, 1) - matrix3D[2][0][1]) < maxError);
-            assertTrue(TeraMath.fastAbs(firstOrder.getProbability(2, 2, 2) - matrix3D[2][2][2]) < maxError);
-        }
+        RawMarkovChain secondOrder = new RawMarkovChain(matrix3D);
+
+        assertTrue(TeraMath.fastAbs(secondOrder.getProbability(0, 0, 0) - matrix3D[0][0][0]) < maxError);
+        assertTrue(TeraMath.fastAbs(secondOrder.getProbability(2, 0, 1) - matrix3D[2][0][1]) < maxError);
+        assertTrue(TeraMath.fastAbs(secondOrder.getProbability(2, 2, 2) - matrix3D[2][2][2]) < maxError);
     }
 
     /**
@@ -194,13 +192,13 @@ public class RawMarkovChainTest {
 
         final int nrOfSamples = 1000;
 
-        testNextDistribution(rawMarkovChain, nrOfSamples, 0, 0, 0);
-        testNextDistribution(rawMarkovChain, nrOfSamples, 1, 3, 2);
-        testNextDistribution(rawMarkovChain, nrOfSamples, 3, 2, 2);
-        testNextDistribution(rawMarkovChain, nrOfSamples, 3, 3, 3);
+        nextDistributionTest(rawMarkovChain, nrOfSamples, 0, 0, 0);
+        nextDistributionTest(rawMarkovChain, nrOfSamples, 1, 3, 2);
+        nextDistributionTest(rawMarkovChain, nrOfSamples, 3, 2, 2);
+        nextDistributionTest(rawMarkovChain, nrOfSamples, 3, 3, 3);
     }
 
-    private void testNextDistribution(RawMarkovChain markovChain, int nrOfSamples, int ... history) {
+    private void nextDistributionTest(RawMarkovChain markovChain, int nrOfSamples, int... history) {
         int[] hits = new int[4];
 
         for (int i = 0; i < nrOfSamples; i++) {
@@ -235,7 +233,6 @@ public class RawMarkovChainTest {
             assertEquals(85, method.invoke(markovChain, (Object) new int[]{1, 1, 1, 1}));
 
         } catch (Exception e) {
-            e.printStackTrace();
             fail();
         }
     }
