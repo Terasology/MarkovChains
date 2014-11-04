@@ -33,7 +33,7 @@ import java.util.LinkedList;
  * If more control over the internal state is necessary, use {@link RawMarkovChain} instead.
  * @param <S> The type of the states.
  *
- * @version 1.00
+ * @version 1.01
  * @author Linus van Elswijk
  */
 public class MarkovChain<S> extends MarkovChainBase {
@@ -260,6 +260,7 @@ public class MarkovChain<S> extends MarkovChainBase {
 
     /**
      * Moves the chain to the next state.
+     *
      * @return The next state.
      *
      * @since 1.00
@@ -280,6 +281,49 @@ public class MarkovChain<S> extends MarkovChainBase {
     }
 
     /**
+     * Returns the current state.
+     * Equivalent to previous(0).
+     *
+     * @return The current state.
+     *
+     * @since 1.00
+     */
+    public S current() {
+        return history.get(history.size() - 1);
+    }
+
+    /**
+     * Returns the previous state.
+     * Equivalent to previous(1).
+     *
+     * @return The previous state.
+     *
+     * @since 1.01
+     */
+    public S previous() {
+        return history.get(history.size() - 2);
+    }
+
+    /**
+     * Returns the nth previous state.
+     * @param n How many states to look back.
+     *          Input of 0 returns the current state.
+     *          0 <= n < {@link #order}.
+     * @return the nth previous state.
+     *
+     * @since 1.01
+     */
+    public S previous(final int n) {
+        final String illegalNMessage = "Expected 0 <= n <= %s, received n = %s.";
+        Preconditions.checkArgument(
+                0 <= n && n <= order,
+                illegalNMessage, order, n
+        );
+
+        return history.get(history.size() - n - 1);
+    }
+
+    /**
      * Resets the history.
      *
      * @since 1.00
@@ -293,45 +337,6 @@ public class MarkovChain<S> extends MarkovChainBase {
             history.add(states.get(0));
             rawHistory.add(0);
         }
-    }
-
-    /**
-     * Returns the current state.
-     * @return The current state.
-     *
-     * @since 1.00
-     */
-    public S current() {
-        return history.get(history.size() - 1);
-    }
-
-    /**
-     * Returns the previous state.
-     * @return The previous state.
-     *
-     * @since 1.00
-     */
-    public S lookBack() {
-        return history.get(history.size() - 2);
-    }
-
-    /**
-     * Returns the nth previous state.
-     * @param n How many states to look back.
-     *          Input of 0 returns the current state.
-     *          0 <= n < {@link #order}.
-     * @return the nth previous state.
-     *
-     * @since 1.00
-     */
-    public S lookBack(final int n) {
-        final String illegalNMessage = "Expected 0 <= n <= %s, received n = %s.";
-        Preconditions.checkArgument(
-                0 <= n && n <= order,
-                illegalNMessage, order, n
-        );
-
-        return history.get(history.size() - n - 1);
     }
 
     // private /////////////////////////////////////////////////////////

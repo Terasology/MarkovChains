@@ -90,14 +90,14 @@ public class MarkovChainTest {
             // test current()
             assertEquals(produced.charAt(i), (char) markovChain.current());
 
-            // test lookBack()
+            // test previous()
             if (i > 0) {
-                assertEquals(produced.charAt(i - 1), (char) markovChain.lookBack());
+                assertEquals(produced.charAt(i - 1), (char) markovChain.previous());
             }
 
-            //test lookBack(n)
+            //test previous(n)
             for (int j = 0; j < Math.min(i, markovChain.order); j++) {
-                assertEquals(produced.charAt(i - j), (char) markovChain.lookBack(j));
+                assertEquals(produced.charAt(i - j), (char) markovChain.previous(j));
             }
         }
 

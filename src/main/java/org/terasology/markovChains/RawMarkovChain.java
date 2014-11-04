@@ -16,11 +16,11 @@
 package org.terasology.markovChains;
 
 import com.google.common.base.Preconditions;
+import com.google.common.primitives.Ints;
 import org.terasology.math.TeraMath;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
 
 /**
  * N-order Markov Chain implementation.
@@ -33,7 +33,7 @@ import java.util.Iterator;
  *  * users have to make sure that the object is in a normalized state before calling getNext().
  *  * states are represented as integer values.
  *
- * @since 1.00
+ * @version 1.01
  * @author Linus van Elswijk
  */
 public class RawMarkovChain extends MarkovChainBase {
@@ -141,15 +141,7 @@ public class RawMarkovChain extends MarkovChainBase {
      * @since 1.00
      */
     public int getNext(float randomNumber, Collection<Integer> states) {
-        int[] statesArray = new int[states.size()];
-
-
-        int i = 0;
-        for (Iterator<Integer> it = states.iterator(); it.hasNext(); i++) {
-            statesArray[i] = it.next();
-        }
-
-        return getNext(randomNumber, statesArray);
+        return getNext(randomNumber, Ints.toArray(states));
     }
 
     /**
