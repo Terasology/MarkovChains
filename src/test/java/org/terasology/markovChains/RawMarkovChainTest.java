@@ -20,7 +20,6 @@ import org.terasology.math.TeraMath;
 import org.terasology.utilities.random.FastRandom;
 import org.terasology.utilities.random.Random;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Deque;
 import java.util.LinkedList;
