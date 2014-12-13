@@ -61,9 +61,9 @@ public class MarkovChain<S> extends MarkovChainBase {
      */
     private final List<Integer> rawHistory;
 
-    private final Random random;
     private final RawMarkovChain rawMarkovChain;
 
+    private Random random;
 
     // 2nd order Markov Chain constructors //////////////////////////////
 
@@ -254,6 +254,17 @@ public class MarkovChain<S> extends MarkovChainBase {
         this.rawHistory = new LinkedList<>();
 
         resetHistory();
+    }
+
+    /**
+     * Replace the RNG with a new one.
+     *
+     * @param random the new random number generator.
+     *
+     * @since 1.1.0
+     */
+    public void setRandom(Random random) {
+        this.random = random;
     }
 
     // public interface //////////////////////////////////////////////////
