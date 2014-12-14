@@ -17,6 +17,7 @@ package org.terasology.markovChains;
 
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -106,6 +107,6 @@ public class TrainingAlgorithmsTest {
             }
         }
 
-        return TrainingAlgorithms.forwardAlgorithm(order, STATES, charSequences, TERMINAL_CHAR);
+        return TrainingAlgorithms.forwardAlgorithm(order, STATES, Arrays.asList(charSequences), TERMINAL_CHAR);
     }
 }

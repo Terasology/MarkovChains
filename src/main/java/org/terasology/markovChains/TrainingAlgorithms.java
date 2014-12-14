@@ -17,6 +17,7 @@ package org.terasology.markovChains;
 
 import org.terasology.utilities.random.FastRandom;
 
+import java.util.Collection;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -53,15 +54,14 @@ public final class TrainingAlgorithms {
      */
     public static <S> MarkovChain<S> forwardAlgorithm(final int order,
                                                       final List<S> states,
-                                                      S[][] sampleSequences,
+                                                      Collection<S[]> sampleSequences,
                                                       S endState
     ) {
         // preparation
         final int nrOfStates = states.size();
-        final float[] transitionArray = RawMarkovChain.createTransitionArray(order, nrOfStates);
+        final float[] transitionArray = MarkovChainBase.createTransitionArray(order, nrOfStates);
 
-        RawMarkovChain rawMarkovChain =
-                new RawMarkovChain(order, nrOfStates, transitionArray);
+        RawMarkovChain rawMarkovChain = new RawMarkovChain(order, nrOfStates, transitionArray);
 
         // forward algorithm body
 
@@ -104,12 +104,12 @@ public final class TrainingAlgorithms {
     }
 
     private static int[] toIntArray(Deque<Integer> states) {
-        Deque<Integer> intObjects = new LinkedList<>(states);
 
-        int[] intArray = new int[intObjects.size()];
+        int index = 0;
+        int[] intArray = new int[states.size()];
 
-        for (int i = 0; i < intArray.length; i++) {
-            intArray[i] = intObjects.removeFirst();
+        for (Integer val : states) {
+            intArray[index++] = val;
         }
 
         return intArray;
