@@ -50,18 +50,6 @@ public class RawMarkovChainTest {
     }
 
     /**
-     * Tests if the constructors produce the expected Markov Chains.
-     * Also tests whether or not probabilities get normalized correctly.
-     */
-    @Test
-    public void constructorAndNormalizationTest() {
-        constructorTest(1, 17);
-        constructorTest(2, 9);
-        constructorTest(3, 5);
-        constructorTest(9, 2);
-    }
-
-    /**
      * Tests user friendly wrappers of methods:
      *  * Constructor accepting a 2D array
      *  * Constructor accepting a 3D array
@@ -149,37 +137,6 @@ public class RawMarkovChainTest {
         }
     }
 
-    private void constructorTest(final int order, final int states) {
-        final String failureLocationFormat = "order=%s , states=%s , i=%s ::";
-        /*
-        final float[][] probabilities = randomTransitionArray(order, states);
-        final ExplicitTransitionMatrix constructorInput = new ExplicitTransitionMatrix(order, states, probabilities[0]);
-        final float[] normalizedInput = probabilities[1];
-        final float maxError = 1.0e-4f;
-
-        RawMarkovChain markovChain = new RawMarkovChain(constructorInput);
-        for (int i = 0; i < constructorInput.length; i++) {
-            int[] stateArray = indexToStates(order, states, i);
-            assertTrue(
-                String.format(failureLocationFormat, order, states, i) +
-                " expected: " + constructorInput[i] +
-                ", actual: " + markovChain.getTransitionMatrix().get(stateArray),
-                TeraMath.fastAbs(constructorInput[i] - markovChain.getTransitionMatrix().get(stateArray)) < maxError
-            );
-        }
-
-        markovChain.getTransitionMatrix().normalize();
-        for (int i = 0; i < probabilities[1].length; i++) {
-            int[] stateArray = indexToStates(order, states, i);
-            assertTrue(
-                String.format(failureLocationFormat, order, states, i) +
-                " expected: " + normalizedInput[i] +
-                ", actual: " + markovChain.getTransitionMatrix().get(stateArray),
-                TeraMath.fastAbs(normalizedInput[i] - markovChain.getTransitionMatrix().get(stateArray)) < maxError
-            );
-        }*/
-    }
-
     private void skipNTest(final boolean doNotSkipN) {
         // first order Markov Chains //////////////////////
         skipNTest(1, 13,  0, doNotSkipN);  //skip none : return current
@@ -230,17 +187,5 @@ public class RawMarkovChainTest {
             previousStates.removeFirst();
             previousStates.push(next);
         }
-    }
-
-    private int[] indexToStates(final int order, final int nrOfStates, int index) {
-        int[] stateArray = new int[order + 1];
-        int currentPow = 1;
-        int nextPower = nrOfStates;
-
-        for (int ord = 0; ord <= order; ord++, currentPow = nextPower, nextPower *= nrOfStates) {
-            stateArray[stateArray.length - ord - 1] = (index % nextPower) / currentPow;
-        }
-
-        return stateArray;
     }
 }

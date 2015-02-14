@@ -26,7 +26,7 @@ import java.util.Arrays;
  * @version 1.50
  * @author Linus van Elswijk
  */
-public abstract class TransitionMatrix {
+public abstract class TransitionMatrix implements Normalizable {
 
     /**
      * Special value that is returned by the firstInvalidState method,
@@ -115,22 +115,17 @@ public abstract class TransitionMatrix {
     }
 
     /**
-     * Normalizes the probability matrix.
-     * Will put the object into a state where isNormalized() returns true.
-     *
-     * @return this object
-     *
-     * @since 1.50
-     */
-    public abstract TransitionMatrix normalize();
-
-    /**
      * Checks if the object is in a normalized state.
+     *
+     * A transitionMatrix is considered to be normalized if and only if all rows of the transitionMatrix add up to 1.
+     *
      * @return true if the object is normalized, false otherwise
      *
      * @since 1.50
      */
-    public abstract boolean isNormalized();
+    public boolean isNormalized() {
+        return false;
+    }
 
     // argument checking /////////////////////////////////////////////////
 

@@ -90,9 +90,6 @@ public class RawMarkovChain extends MarkovChainBase {
         final String randomNumberOutOfRangeFormat =
                 "randomNumber = %s; must be a nr >= 0 and < 1.0";
 
-        final String notNormalizedMessage =
-                "Object has not been normalized";
-
         // checks //////////////////////////////
 
         Preconditions.checkArgument(
@@ -103,16 +100,16 @@ public class RawMarkovChain extends MarkovChainBase {
 
         transitionMatrix.checkInputStates(true, 1, states);
 
-        Preconditions.checkState(
-                transitionMatrix.isNormalized(),
-                notNormalizedMessage
-        );
-
         // method body /////////////////////////////
 
         int i;
-        float leftOver = randomNumber;
         float[] transitionsProbabilities = transitionMatrix.getRow(states);
+
+        float leftOver = 0;
+        for (float prob: transitionsProbabilities) {
+            leftOver += prob;
+        }
+        leftOver *= randomNumber;
 
         for (i = 0; i < transitionsProbabilities.length; i++) {
             leftOver -= transitionsProbabilities[i];

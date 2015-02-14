@@ -78,14 +78,14 @@ public class ExplicitTransitionMatrixTest {
         assertTrue(TeraMath.fastAbs(matrix.get(1, 2) - expected) < epsilon);
         assertTrue(TeraMath.fastAbs(matrix.get(2, 2) - expected) < epsilon);
 
-        final float[][] randomTransitionArray = TestUtilities.randomTransitionArray(1,4);
-        ExplicitTransitionMatrix randomMatrix = new ExplicitTransitionMatrix(1,4, randomTransitionArray[0]);
-        ExplicitTransitionMatrix randomMatrixNormalized = new ExplicitTransitionMatrix(1,4,randomTransitionArray[1]);
+        final float[][] randomTransitionArray = TestUtilities.randomTransitionArray(1, 4);
+        ExplicitTransitionMatrix randomMatrix = new ExplicitTransitionMatrix(1, 4, randomTransitionArray[0]);
+        ExplicitTransitionMatrix randomMatrixNormalized = new ExplicitTransitionMatrix(1, 4, randomTransitionArray[1]);
         randomMatrix.normalize();
 
-        for(int x = 0; x < 4; x++) {
-            for(int y = 0; y < 4; y++) {
-                assertTrue(TeraMath.fastAbs(randomMatrix.get(x, y) - randomMatrixNormalized.get(x,y)) < epsilon);
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                assertTrue(TeraMath.fastAbs(randomMatrix.get(x, y) - randomMatrixNormalized.get(x, y)) < epsilon);
             }
         }
     }

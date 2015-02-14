@@ -142,7 +142,6 @@ public class MarkovChain<S> extends MarkovChainBase {
 
         this.states = ImmutableList.copyOf(states);
         this.rawMarkovChain = rawMarkovChain;
-        this.rawMarkovChain.getTransitionMatrix().normalize();
         this.random = random;
         this.history = new LinkedList<>();
         this.rawHistory = new LinkedList<>();
