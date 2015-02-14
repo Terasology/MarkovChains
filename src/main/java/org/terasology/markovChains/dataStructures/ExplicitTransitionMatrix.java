@@ -25,7 +25,10 @@ import java.util.Arrays;
  *
  * The storage requirement is O( k^(i+1) ), where k is the number of states and i is the order.
  * Since the matrix grows exponentially with the order, it is only suitable for Markov chains with a low order.
+ *
  * @since 1.50
+ * @version 1.50
+ * @author Linus van Elswijk
  */
 public class ExplicitTransitionMatrix extends TransitionMatrix {
     private boolean isNormalized;
@@ -160,7 +163,7 @@ public class ExplicitTransitionMatrix extends TransitionMatrix {
 
         checkInputStates(true, 1,  states);
 
-        for(int i = 0; i < probabilities.length; i++) {
+        for (int i = 0; i < probabilities.length; i++) {
             Preconditions.checkArgument(
                     probabilities[i] >= 0f,
                     invalidProbability,
@@ -171,9 +174,7 @@ public class ExplicitTransitionMatrix extends TransitionMatrix {
         // method body /////////////////////////////
         int indexOffset = toIndex(states);
 
-        for(int i = 0; i < probabilities.length; i++) {
-            transitionProbabilityArray[indexOffset + i] = probabilities[i];
-        }
+        System.arraycopy(probabilities, 0, transitionProbabilityArray, indexOffset, probabilities.length);
         isNormalized = false;
 
         return this;

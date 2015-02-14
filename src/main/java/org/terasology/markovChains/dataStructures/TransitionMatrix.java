@@ -23,6 +23,8 @@ import java.util.Arrays;
  * An abstract base class for objects that describe the transition matrix of a Markov chain.
  *
  * @since 1.50
+ * @version 1.50
+ * @author Linus van Elswijk
  */
 public abstract class TransitionMatrix {
 
@@ -90,13 +92,21 @@ public abstract class TransitionMatrix {
      */
     public abstract float get(final int... states);
 
+    /**
+     * Returns the probabilities of transitioning to the next states, given history X_0 .. X_n-1
+     * @param states The history (X_0 .. X_n-1) states.
+     *               The amount of states given as history should equal the order of the Markov Chain - 1.
+     * @return An array with at position i the probability of transitioning towards state X_i.
+     *
+     * @since 1.50
+     */
     public final float[] getRow(final int... states) {
         checkInputStates(true, 0, states);
 
         int[] transitionIndex = Arrays.copyOf(states, states.length + 1);
         float[] probabilities = new float[getNrOfStates()];
 
-        for(int i = 0; i < probabilities.length; i++) {
+        for (int i = 0; i < probabilities.length; i++) {
             transitionIndex[states.length] = i; //sets the last element
             probabilities[i] = get(transitionIndex);
         }

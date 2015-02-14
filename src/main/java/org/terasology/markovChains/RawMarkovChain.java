@@ -18,9 +18,7 @@ package org.terasology.markovChains;
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
 import org.terasology.markovChains.dataStructures.TransitionMatrix;
-import org.terasology.math.TeraMath;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -34,7 +32,8 @@ import java.util.Collection;
  *  * users have to make sure that the object is in a normalized state before calling getNext().
  *  * states are represented as integer values.
  *
- * @version 1.5
+ * @since 1.00
+ * @version 1.50
  * @author Linus van Elswijk
  */
 public class RawMarkovChain extends MarkovChainBase {
@@ -129,12 +128,17 @@ public class RawMarkovChain extends MarkovChainBase {
          * The normalization process makes sure that there is at least one such element, before
          * i == 0.
          */
-        while(transitionsProbabilities[i] == 0)
+        while (transitionsProbabilities[i] == 0) {
             i--;
+        }
 
         return i;
     }
 
+    /**
+     * Returns (a reference to) the transition matrix of the MarkovChain
+     * @return the transition matrix
+     */
     public TransitionMatrix getTransitionMatrix() {
         return this.transitionMatrix;
     }

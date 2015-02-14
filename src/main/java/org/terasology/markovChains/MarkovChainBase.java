@@ -16,13 +16,14 @@
 package org.terasology.markovChains;
 
 import com.google.common.base.Preconditions;
-import org.terasology.math.TeraMath;
 
 /**
  * Abstract base class for Markov Chain implementations.
  * Defines a minimal common interface.
- * @author Linus van Elswijk
+ *
+ * @since 1.00
  * @version 1.50
+ * @author Linus van Elswijk
  */
 public abstract class MarkovChainBase {
 

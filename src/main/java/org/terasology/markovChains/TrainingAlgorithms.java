@@ -16,8 +16,6 @@
 package org.terasology.markovChains;
 
 import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
-import org.terasology.markovChains.dataStructures.TransitionMatrix;
-import org.terasology.utilities.random.FastRandom;
 
 import java.util.Collection;
 import java.util.Deque;
@@ -27,7 +25,8 @@ import java.util.List;
 /**
  * A collection of algorithms that can create and train a Markov Chain from training data.
  *
- * @version 1.00
+ * @since 1.00
+ * @version 1.50
  * @author Linus van Elswijk
  */
 public final class TrainingAlgorithms {

@@ -19,10 +19,7 @@ import org.junit.Test;
 import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
 import org.terasology.markovChains.dataStructures.TransitionMatrix;
 import org.terasology.math.TeraMath;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
 
-import java.lang.reflect.Method;
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -33,7 +30,6 @@ import static junit.framework.Assert.*;
  * @author Linus van Elswijk
  */
 public class RawMarkovChainTest {
-    Random randomNumberGenerator = new FastRandom(7357);
 
     /**
      * Tests deterministic Markov Chains that always skip n states,
@@ -120,121 +116,11 @@ public class RawMarkovChainTest {
     }
 
     /**
-     * Test set multiple
-     */
-    @Test
-    public void multipleTransitionsSetTest() {
-        ExplicitTransitionMatrix transitionMatrix = new ExplicitTransitionMatrix(2, 4, randomTransitionArray(2, 4)[0]);
-
-        RawMarkovChain chain = new RawMarkovChain(transitionMatrix);
-        chain.getTransitionMatrix().normalize();
-
-        float[] probsIncorrectLength = {1,2,3};
-        float[] probsInvalid = {0.0f, -0.2f, 0.3f, 0.5f};
-        float[] probsValid = {0.0f, 0.2f, 0.3f, 0.5f};
-
-        int[] statesIncorrectLength = {1, 1, 2};
-        int[] statesInvalid = {1, 4};
-        int[] statesValid = {1, 2};
-
-        ExplicitTransitionMatrix matrix = (ExplicitTransitionMatrix)chain.getTransitionMatrix();
-
-        try {
-            matrix.setRow(probsIncorrectLength, statesValid);
-            fail("Exception should have been thrown");
-        } catch (IllegalArgumentException e) {
-            // test passed
-            assertTrue(true);
-        }
-
-        try {
-            matrix.setRow(probsInvalid, statesValid);
-            fail("Exception should have been thrown");
-        } catch (IllegalArgumentException e) {
-            // test passed
-            assertTrue(true);
-        }
-
-        try {
-            matrix.setRow(probsValid, statesIncorrectLength);
-            fail("Exception should have been thrown");
-        } catch (IllegalArgumentException e) {
-            // test passed
-            assertTrue(true);
-        }
-
-        try {
-            matrix.setRow(probsValid, statesInvalid);
-            fail("Exception should have been thrown");
-        } catch (IllegalArgumentException e) {
-            // test passed
-            assertTrue(true);
-        }
-
-        matrix.setRow(probsValid, statesValid);
-        assertFalse(matrix.isNormalized());
-
-        final float epsilon = 1.0e-5f;
-        for(int i = 0; i < 4; i++) {
-            float expected = probsValid[i];
-            float actual = matrix.get(statesValid[0], statesValid[1], i);
-            assertTrue(TeraMath.fastAbs(actual - expected) < epsilon);
-        }
-    }
-
-    /**
-     * Tests if an exception is thrown for an invalid state input
-     */
-    @Test
-    public void invalidStateInputTest() {
-        RawMarkovChain chain = new RawMarkovChain(new ExplicitTransitionMatrix(1, 4, randomTransitionArray(1, 4)[0]));
-        chain.getTransitionMatrix().normalize();
-
-        try {
-            chain.getTransitionMatrix().get(0, 4);
-            fail("Exception should have been thrown");
-        } catch (IllegalArgumentException e) {
-            // test passed
-            assertTrue(true);
-        }
-
-        try {
-            chain.getTransitionMatrix().get(-1, 3);
-            fail("Exception should have been thrown");
-        } catch (IllegalArgumentException e) {
-            // test passed
-            assertTrue(true);
-        }
-    }
-
-    /**
-     * Tests if the normalization correctly handles
-     * a transition matrix with only zeros.
-     */
-    @Test
-    public void testZeroMatrixNormalization() {
-        final float[][] transitionMatrix = new float[][] {
-            {0f, 0f, 0f},
-            {0f, 0f, 0f},
-            {0f, 0f, 0f}
-        };
-
-        RawMarkovChain chain = new RawMarkovChain(new ExplicitTransitionMatrix(transitionMatrix));
-        chain.getTransitionMatrix().normalize();
-
-        final float expected = 1.0f / 3;
-        final float epsilon = 1.0e-5f;
-        assertTrue(TeraMath.fastAbs(chain.getTransitionMatrix().get(0, 0) - expected) < epsilon);
-        assertTrue(TeraMath.fastAbs(chain.getTransitionMatrix().get(0, 0) - expected) < epsilon);
-        assertTrue(TeraMath.fastAbs(chain.getTransitionMatrix().get(0, 0) - expected) < epsilon);
-    }
-
-    /**
      * Tests if the distribution of next() is the same as the transition matrix would suggest.
      */
     @Test
     public void testNextDistribution() {
-        final RawMarkovChain rawMarkovChain = new RawMarkovChain(new ExplicitTransitionMatrix(3, 4, randomTransitionArray(3, 4)[0]));
+        final RawMarkovChain rawMarkovChain = new RawMarkovChain(TestUtilities.randomTransitionMatrix(3, 4));
         rawMarkovChain.getTransitionMatrix().normalize();
 
         final int nrOfSamples = 1000;
@@ -249,7 +135,7 @@ public class RawMarkovChainTest {
         int[] hits = new int[4];
 
         for (int i = 0; i < nrOfSamples; i++) {
-            hits[markovChain.getNext(randomNumberGenerator.nextFloat(), history)]++;
+            hits[markovChain.getNext(TestUtilities.randomNumberGenerator.nextFloat(), history)]++;
         }
 
         for (int i = 0; i < 4; i++) {
@@ -261,28 +147,6 @@ public class RawMarkovChainTest {
             float actual = ((float) hits[i]) / nrOfSamples;
             assertTrue(TeraMath.fastAbs(expected - actual) < 0.125f);
         }
-    }
-
-    @Test
-    public void testPrivateToIndex() {
-    /*    RawMarkovChain markovChain = new RawMarkovChain(new ExplicitTransitionMatrix(3, 4, skipNTransitionArray(1, 3, 4)));
-
-        try {
-            Method method = RawMarkovChain.class.getDeclaredMethod("toIndex", int[].class);
-            method.setAccessible(true);
-
-            //varargs call is done by casting an array to Object
-            assertEquals(0,  method.invoke(markovChain, (Object) new int[]{0, 0, 0, 0}));
-            assertEquals(1,  method.invoke(markovChain, (Object) new int[]{0, 0, 0, 1}));
-            assertEquals(4,  method.invoke(markovChain, (Object) new int[]{0, 0, 1, 0}));
-            assertEquals(16, method.invoke(markovChain, (Object) new int[]{0, 1, 0, 0}));
-            assertEquals(64, method.invoke(markovChain, (Object) new int[]{1, 0, 0, 0}));
-            assertEquals(85, method.invoke(markovChain, (Object) new int[]{1, 1, 1, 1}));
-
-        } catch (ReflectiveOperationException e) {
-            fail();
-        }
-    */ // TODO: make this test work again
     }
 
     private void constructorTest(final int order, final int states) {
@@ -340,8 +204,8 @@ public class RawMarkovChainTest {
 
     private void skipNTest(final int order, final int states, final int n, final boolean doNotSkipN) {
         float[] props2A = doNotSkipN
-                ? doNotSkipNTransitionArray(n, order, states)
-                : skipNTransitionArray(n, order, states);
+                ? TestUtilities.doNotSkipNTransitionArray(n, order, states)
+                : TestUtilities.skipNTransitionArray(n, order, states);
 
         TransitionMatrix transitionMatrix = new ExplicitTransitionMatrix(order, states, props2A);
 
@@ -356,7 +220,7 @@ public class RawMarkovChainTest {
 
         final int nrOfRuns = doNotSkipN ? states * 2 : states;
         for (int i = 0; i < nrOfRuns; i++) {
-            int next = chain.getNext(randomNumberGenerator.nextFloat(), previousStates);
+            int next = chain.getNext(TestUtilities.randomNumberGenerator.nextFloat(), previousStates);
             if (doNotSkipN) {
                 assertFalse((previousStates.getLast() + n) % states == next);
             } else {
@@ -366,57 +230,6 @@ public class RawMarkovChainTest {
             previousStates.removeFirst();
             previousStates.push(next);
         }
-    }
-
-    private float[][] randomTransitionArray(final int order, final int states) {
-        float[][] probabilities = new float[2][TeraMath.pow(states, order + 1)];
-
-        for (int i = 0; i < probabilities[0].length; i += states) {
-            float[] iProbabilities = new float[states];
-            float sumOfProbabilities = 0f;
-            float sum = 0;
-
-            for (int state = 0; state < states; state++) {
-                iProbabilities[state] = randomNumberGenerator.nextFloat();
-                sumOfProbabilities += iProbabilities[state];
-            }
-
-            for (int state = 0; state < states; state++) {
-                probabilities[0][i + state] = iProbabilities[state];
-                probabilities[1][i + state] = iProbabilities[state] / sumOfProbabilities;
-                sum += probabilities[1][i + state];
-            }
-        }
-
-        return probabilities;
-    }
-
-    private float[] skipNTransitionArray(final int n, final int order, final int states) {
-        float[] probabilities = new float[TeraMath.pow(states, order + 1)];
-
-        int cycleLength = states * states;
-
-        for (int i = 0; i < probabilities.length; i++) {
-            final int previousState = i % cycleLength / states;
-            final int currentState = i % states;
-
-            if ((previousState + n) % states == currentState) {
-                probabilities[i] = 1f;
-            } else {
-                probabilities[i] = 0f;
-            }
-        }
-
-        return probabilities;
-    }
-
-    private float[] doNotSkipNTransitionArray(final int n, final int order, final int states) {
-        float[] probabilities = skipNTransitionArray(n, order, states);
-        for (int i = 0; i < probabilities.length; i++) {
-            probabilities[i] = 1.0f - probabilities[i];
-        }
-
-        return probabilities;
     }
 
     private int[] indexToStates(final int order, final int nrOfStates, int index) {

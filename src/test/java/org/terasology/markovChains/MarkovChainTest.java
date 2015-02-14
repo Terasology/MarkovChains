@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
 import org.terasology.utilities.random.FastRandom;
+import org.terasology.utilities.random.Random;
 
 import static junit.framework.Assert.*;
 
@@ -81,6 +82,23 @@ public class MarkovChainTest {
 
         for (MarkovChain markovChain: markovChains) {
             deterministicChainTest(markovChain, expectedOutput);
+        }
+    }
+
+    @Test
+    public void setRandomTest() {
+        MarkovChain chain = new MarkovChain<>(STATES, TRANSITION_MATRIX_2D);
+        chain.next();
+
+        MarkovChain chain2 = new MarkovChain<>(STATES, TRANSITION_MATRIX_2D);
+
+        chain.setRandom(new FastRandom(456));
+        chain.resetHistory();
+
+        chain2.setRandom(new FastRandom(456));
+
+        for(int i = 0; i < 5; i++) {
+            assertEquals(chain.next(), chain2.next());
         }
     }
 

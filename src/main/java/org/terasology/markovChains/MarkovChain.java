@@ -34,7 +34,8 @@ import java.util.LinkedList;
  * If more control over the internal state is necessary, use {@link RawMarkovChain} instead.
  * @param <S> The type of the states.
  *
- * @version 1.5
+ * @since 1.00
+ * @version 1.50
  * @author Linus van Elswijk
  */
 public class MarkovChain<S> extends MarkovChainBase {
