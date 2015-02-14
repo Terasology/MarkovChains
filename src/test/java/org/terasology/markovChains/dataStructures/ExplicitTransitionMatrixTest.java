@@ -15,10 +15,40 @@
  */
 package org.terasology.markovChains.dataStructures;
 
+import org.junit.Test;
+import org.terasology.markovChains.MarkovChainBase;
+import org.terasology.markovChains.RawMarkovChain;
+
+import static org.junit.Assert.fail;
+
 /**
  * Created by Linus on 14-2-2015.
  */
 public class ExplicitTransitionMatrixTest {
 
+    /**
+     * Checks that the createTransitionArray creates an array of the right size and
+     * that it only contains zeros.
+     */
+    @Test
+    public void testCreateTransitionArray() {
+        final int order = 0;
+        final int nrOfStates = 1;
+        final int[][] orderAndStateNrPairs = {
+                {1, 1},
+                {1, 9},
+                {3, 4},
+                {5, 3}
+        };
 
+        for (int[] param : orderAndStateNrPairs) {
+            try {
+                TransitionMatrix matrix = new ExplicitTransitionMatrix(
+                        param[order], param[nrOfStates], ExplicitTransitionMatrix.createTransitionArray(param[order], param[nrOfStates])
+                );
+            } catch (Exception e) {
+                fail("Constructor threw an exception / transition array was not accepted.");
+            }
+        }
+    }
 }

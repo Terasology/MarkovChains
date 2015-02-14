@@ -17,6 +17,7 @@ package org.terasology.markovChains;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.Test;
+import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
 import org.terasology.utilities.random.FastRandom;
 
 import static junit.framework.Assert.*;
@@ -31,7 +32,7 @@ public class MarkovChainTest {
     private static final ImmutableList<Character> STATES =
             ImmutableList.of('0', 'M', 'K', 'A', 'O', 'R', 'V');
 
-    private static final float[][] TRANSITION_MATRIX_2D =  {
+    private static final float[][] TRANSITION_MATRIX_2D_RAW =  {
             //   0  M  K  A  O  R  V
             {0, 1, 0, 0, 0, 0, 0}, //0 -> M
             {0, 0, 0, 1, 0, 0, 0}, //M -> A
@@ -42,15 +43,20 @@ public class MarkovChainTest {
             {0, 0, 0, 0, 0, 0, 1}, //V -> V
     };
 
-    private static final float [][][] TRANSITION_MATRIX_3D = {
-            TRANSITION_MATRIX_2D, //0
-            TRANSITION_MATRIX_2D, //M
-            TRANSITION_MATRIX_2D, //K
-            TRANSITION_MATRIX_2D, //A
-            TRANSITION_MATRIX_2D, //O
-            TRANSITION_MATRIX_2D, //R
-            TRANSITION_MATRIX_2D, //V
+    private static final ExplicitTransitionMatrix TRANSITION_MATRIX_2D = new ExplicitTransitionMatrix(TRANSITION_MATRIX_2D_RAW);
+
+    private static final float [][][] TRANSITION_MATRIX_3D_RAW = {
+            TRANSITION_MATRIX_2D_RAW, //0
+            TRANSITION_MATRIX_2D_RAW, //M
+            TRANSITION_MATRIX_2D_RAW, //K
+            TRANSITION_MATRIX_2D_RAW, //A
+            TRANSITION_MATRIX_2D_RAW, //O
+            TRANSITION_MATRIX_2D_RAW, //R
+            TRANSITION_MATRIX_2D_RAW, //V
     };
+
+
+    private static final ExplicitTransitionMatrix TRANSITION_MATRIX_3D = new ExplicitTransitionMatrix(TRANSITION_MATRIX_3D_RAW);
 
     /**
      * Tests a deterministic Markov Chain that generates the string "MARKOVVV".
