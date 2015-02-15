@@ -15,7 +15,7 @@
  */
 package org.terasology.markovChains;
 
-import org.terasology.utilities.random.FastRandom;
+import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
 
 import java.util.Collection;
 import java.util.Deque;
@@ -25,7 +25,8 @@ import java.util.List;
 /**
  * A collection of algorithms that can create and train a Markov Chain from training data.
  *
- * @version 1.00
+ * @since 1.00
+ * @version 1.50
  * @author Linus van Elswijk
  */
 public final class TrainingAlgorithms {
@@ -59,9 +60,9 @@ public final class TrainingAlgorithms {
     ) {
         // preparation
         final int nrOfStates = states.size();
-        final float[] transitionArray = MarkovChainBase.createTransitionArray(order, nrOfStates);
+        final ExplicitTransitionMatrix transitionMatrix = new ExplicitTransitionMatrix(order, nrOfStates);
 
-        RawMarkovChain rawMarkovChain = new RawMarkovChain(order, nrOfStates, transitionArray);
+        //RawMarkovChain rawMarkovChain = new RawMarkovChain(order, nrOfStates, transitionArray);
 
         // forward algorithm body
 
@@ -78,7 +79,7 @@ public final class TrainingAlgorithms {
             for (S state : sequence) {
                 history.addLast(states.indexOf(state));
 
-                adjustProbability(rawMarkovChain, history, +1f);
+                adjustProbability(transitionMatrix, history, +1f);
 
                 history.removeFirst();
             }
@@ -86,25 +87,24 @@ public final class TrainingAlgorithms {
             if (endState != null) {
                 history.addLast(states.indexOf(endState));
 
-                adjustProbability(rawMarkovChain, history, +1f);
+                adjustProbability(transitionMatrix, history, +1f);
 
                 history.removeFirst();
             }
         }
 
-        rawMarkovChain.normalizeProbabilities();
+        transitionMatrix.normalize();
 
-        return new MarkovChain<>(order, states, rawMarkovChain, new FastRandom());
+        return new MarkovChain<>(states, transitionMatrix);
     }
 
-    private static void adjustProbability(RawMarkovChain markovChain, Deque<Integer> states, float delta) {
+    private static void adjustProbability(ExplicitTransitionMatrix transitionMatrix, Deque<Integer> states, float delta) {
         int[] stateArray = toIntArray(states);
 
-        markovChain.setProbability(markovChain.getProbability(stateArray) + delta, stateArray);
+        transitionMatrix.set(transitionMatrix.get(stateArray) + delta, stateArray);
     }
 
     private static int[] toIntArray(Deque<Integer> states) {
-
         int index = 0;
         int[] intArray = new int[states.size()];
 

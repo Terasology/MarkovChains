@@ -16,13 +16,14 @@
 package org.terasology.markovChains;
 
 import com.google.common.base.Preconditions;
-import org.terasology.math.TeraMath;
 
 /**
  * Abstract base class for Markov Chain implementations.
  * Defines a minimal common interface.
+ *
+ * @since 1.00
+ * @version 1.50
  * @author Linus van Elswijk
- * @version 1.00
  */
 public abstract class MarkovChainBase {
 
@@ -69,69 +70,6 @@ public abstract class MarkovChainBase {
 
         this.order = order;
         this.nrOfStates = nrOfStates;
-    }
-
-    /**
-     * Convenience method to create a transition array of the right size for
-     * a given order and nr of states.
-     * @param order The order of the Markov chain
-     * @param nrOfStates The nr of states in the Markov chain
-     * @return The transition array, filled with zeros.
-     *
-     * @since 1.00
-     */
-    public static float[] createTransitionArray(final int order, final int nrOfStates) {
-        return new float[TeraMath.pow(nrOfStates, order + 1)];
-    }
-
-    /**
-     * Flattens a 3D transition matrix into a (1D) transition array)
-     * @param probabilities The transition matrix.
-     * @return The equivalent transition array.
-     *
-     * @since 1.00
-     */
-    protected static float[] flatten(final float[][][] probabilities) {
-        final int width  = probabilities.length;
-        final int height = probabilities[0].length;
-        final int depth = probabilities[0][0].length;
-
-        float[] flattened = new float[width * height * depth];
-
-        int i = 0;
-        for (float[][] slice : probabilities) {
-            for (float[] row : slice) {
-                for (float probability : row) {
-                    flattened[i] = probability;
-                    i++;
-                }
-            }
-        }
-
-        return flattened;
-    }
-
-    /**
-     * Flattens a 2D transition matrix into a (1D) transition array)
-     * @param probabilities The transition matrix.
-     * @return The equivalent transition array.
-     * @since 1.00
-     */
-    protected static float[] flatten(final float[][] probabilities) {
-        final int width  = probabilities.length;
-        final int height = probabilities[0].length;
-
-        float[] flattened = new float[width * height];
-
-        int i = 0;
-        for (float[] row : probabilities) {
-            for (float probability : row) {
-                flattened[i] = probability;
-                i++;
-            }
-        }
-
-        return flattened;
     }
 
 }

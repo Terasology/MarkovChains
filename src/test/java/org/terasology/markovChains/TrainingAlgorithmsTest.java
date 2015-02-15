@@ -48,7 +48,7 @@ public class TrainingAlgorithmsTest {
     };
 
     private static final List<Character> STATES = new LinkedList<>();
-    {   // fill STATES
+    static {   // fill STATES
         STATES.add(TERMINAL_CHAR);
 
         Set<Character> encounteredChars = new HashSet<>();
