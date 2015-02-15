@@ -50,6 +50,9 @@ public class TransitionMatrixTest {
         try {
             matrix.setRow(probsIncorrectLength, statesValid);
             Assert.fail("Exception should have been thrown");
+
+            // Avoid unused local value warnings.
+            matrix.get(statesValid);
         } catch (IllegalArgumentException e) {
             // test passed
             assertTrue(true);
@@ -58,6 +61,9 @@ public class TransitionMatrixTest {
         try {
             matrix.setRow(probsInvalid, statesValid);
             Assert.fail("Exception should have been thrown");
+
+            // Avoid unused local value warnings.
+            matrix.get(statesValid);
         } catch (IllegalArgumentException e) {
             // test passed
             assertTrue(true);
@@ -66,6 +72,9 @@ public class TransitionMatrixTest {
         try {
             matrix.setRow(probsValid, statesIncorrectLength);
             Assert.fail("Exception should have been thrown");
+
+            // Avoid unused local value warnings.
+            matrix.get(statesValid);
         } catch (IllegalArgumentException e) {
             // test passed
             assertTrue(true);

@@ -122,7 +122,7 @@ public class RawMarkovChainTest {
         int[] hits = new int[4];
 
         for (int i = 0; i < nrOfSamples; i++) {
-            hits[markovChain.getNext(TestUtilities.randomNumberGenerator.nextFloat(), history)]++;
+            hits[markovChain.getNext(TestUtilities.RANDOM_NUMBER_GENERATOR.nextFloat(), history)]++;
         }
 
         for (int i = 0; i < 4; i++) {
@@ -175,7 +175,7 @@ public class RawMarkovChainTest {
 
         final int nrOfRuns = doNotSkipN ? states * 2 : states;
         for (int i = 0; i < nrOfRuns; i++) {
-            int next = chain.getNext(TestUtilities.randomNumberGenerator.nextFloat(), previousStates);
+            int next = chain.getNext(TestUtilities.RANDOM_NUMBER_GENERATOR.nextFloat(), previousStates);
             if (doNotSkipN) {
                 assertFalse((previousStates.getLast() + n) % states == next);
             } else {

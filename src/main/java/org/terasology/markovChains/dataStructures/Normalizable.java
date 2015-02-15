@@ -28,5 +28,5 @@ public interface Normalizable {
      *
      * @since 1.50
      */
-    public TransitionMatrix normalize();
+    TransitionMatrix normalize();
 }

@@ -25,7 +25,7 @@ import org.terasology.utilities.random.Random;
  */
 public final class TestUtilities {
 
-    public static Random randomNumberGenerator = new FastRandom(7357);
+    public static final Random RANDOM_NUMBER_GENERATOR = new FastRandom(7357);
 
     private TestUtilities() { }
 
@@ -37,7 +37,7 @@ public final class TestUtilities {
             float sumOfProbabilities = 0f;
 
             for (int state = 0; state < states; state++) {
-                iProbabilities[state] = randomNumberGenerator.nextFloat();
+                iProbabilities[state] = RANDOM_NUMBER_GENERATOR.nextFloat();
                 sumOfProbabilities += iProbabilities[state];
             }
 
