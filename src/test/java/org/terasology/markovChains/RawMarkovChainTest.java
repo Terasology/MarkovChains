@@ -125,12 +125,20 @@ public class RawMarkovChainTest {
             hits[markovChain.getNext(TestUtilities.RANDOM_NUMBER_GENERATOR.nextFloat(), history)]++;
         }
 
+        final float[] row = markovChain.getTransitionMatrix().getRow(history);
+        float sumOfRow = 0.0f;
+        for (float prob: row) {
+            sumOfRow += prob;
+        }
+
         for (int i = 0; i < 4; i++) {
             float expected = markovChain.getTransitionMatrix().get(
                     history[0],
                     history[1],
                     history[2],
                     i);
+            expected /= sumOfRow;
+
             float actual = ((float) hits[i]) / nrOfSamples;
             assertTrue(TeraMath.fastAbs(expected - actual) < 0.125f);
         }
