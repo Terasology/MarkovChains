@@ -122,7 +122,13 @@ public class RawMarkovChainTest {
         int[] hits = new int[4];
 
         for (int i = 0; i < nrOfSamples; i++) {
-            hits[markovChain.getNext(TestUtilities.randomNumberGenerator.nextFloat(), history)]++;
+            hits[markovChain.getNext(TestUtilities.RANDOM_NUMBER_GENERATOR.nextFloat(), history)]++;
+        }
+
+        final float[] row = markovChain.getTransitionMatrix().getRow(history);
+        float sumOfRow = 0.0f;
+        for (float prob: row) {
+            sumOfRow += prob;
         }
 
         for (int i = 0; i < 4; i++) {
@@ -131,6 +137,8 @@ public class RawMarkovChainTest {
                     history[1],
                     history[2],
                     i);
+            expected /= sumOfRow;
+
             float actual = ((float) hits[i]) / nrOfSamples;
             assertTrue(TeraMath.fastAbs(expected - actual) < 0.125f);
         }
@@ -175,7 +183,7 @@ public class RawMarkovChainTest {
 
         final int nrOfRuns = doNotSkipN ? states * 2 : states;
         for (int i = 0; i < nrOfRuns; i++) {
-            int next = chain.getNext(TestUtilities.randomNumberGenerator.nextFloat(), previousStates);
+            int next = chain.getNext(TestUtilities.RANDOM_NUMBER_GENERATOR.nextFloat(), previousStates);
             if (doNotSkipN) {
                 assertFalse((previousStates.getLast() + n) % states == next);
             } else {
