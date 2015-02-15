@@ -26,7 +26,7 @@ import java.util.Arrays;
  * @version 1.50
  * @author Linus van Elswijk
  */
-public abstract class TransitionMatrix implements Normalizable {
+public abstract class TransitionMatrix {
 
     /**
      * Special value that is returned by the firstInvalidState method,

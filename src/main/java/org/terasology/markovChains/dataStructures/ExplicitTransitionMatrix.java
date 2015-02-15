@@ -30,7 +30,7 @@ import java.util.Arrays;
  * @version 1.50
  * @author Linus van Elswijk
  */
-public class ExplicitTransitionMatrix extends TransitionMatrix {
+public class ExplicitTransitionMatrix extends TransitionMatrix implements Normalizable {
     private boolean isNormalized;
     private final float[] transitionProbabilityArray;
 

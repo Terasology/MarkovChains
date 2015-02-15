@@ -109,7 +109,6 @@ public class RawMarkovChainTest {
     @Test
     public void testNextDistribution() {
         final RawMarkovChain rawMarkovChain = new RawMarkovChain(TestUtilities.randomTransitionMatrix(3, 4));
-        rawMarkovChain.getTransitionMatrix().normalize();
 
         final int nrOfSamples = 1000;
 
@@ -167,7 +166,6 @@ public class RawMarkovChainTest {
         TransitionMatrix transitionMatrix = new ExplicitTransitionMatrix(order, states, props2A);
 
         RawMarkovChain chain = new RawMarkovChain(transitionMatrix);
-        chain.getTransitionMatrix().normalize();
 
         Deque<Integer> previousStates = new LinkedList<>();
 
