@@ -45,9 +45,9 @@ public abstract class MarkovChainBase {
     /**
      * Constructs a Markov Chain of any order and any nr of states.
      *
-     * @param order The order (>= 1) of the Markov Chain,
+     * @param order The order (&ge; 1) of the Markov Chain,
      *      i.e. how many (previous) states are considered to compute the next.
-     * @param nrOfStates The nr of states (>=1).
+     * @param nrOfStates The nr of states (&ge;1).
      *
      * @since 1.00
      */

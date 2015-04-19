@@ -75,9 +75,9 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
      * <b>Note:</b> Avoid calling this constructor directly. Use the more user friendly, 2D and 3D array versions
      * whenever possible.
      *
-     * @param order The order (>= 1) of the Markov chain,
+     * @param order The order (&ge; 1) of the Markov chain,
      *      i.e. how many (previous) states are considered to compute the next.
-     * @param nrOfStates The nr of states (>=1).
+     * @param nrOfStates The nr of states (&ge;1).
      * @param probabilities The transition probabilities of length pow(nrOfStates, order + 1).
      *      The provided array should be a flattened n-dimensional array of probabilities, with
      *      n being the order of the Markov chain.
@@ -127,6 +127,7 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
         isNormalized = false;
     }
 
+    @Override
     public float get(final int... states) {
         checkInputStates(false, 0, states);
 
@@ -137,7 +138,7 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
      * Sets the transition probabilities for all target states for a specific history.
      * Will put the object into a state where isNormalized() returns false.
      *
-     * @param probabilities the new probabilities (all >= 0).
+     * @param probabilities the new probabilities (all &ge; 0).
      * @param states The history (X_0 .. X_n) states in the order X_0 to X_n.
      *               The amount of states given as history should equal the order of the Markov chain - 1.
      *
@@ -183,7 +184,7 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
      * Sets a transition probability to a new value.
      * Will put the object into a state where isNormalized() returns false.
      *
-     * @param probability the new probability (>= 0).
+     * @param probability the new probability (&ge; 0).
      * @param states The history (X_0 .. X_n-1) states and target state X_n in the order X_0 to X_n.
      *               The amount of states given as history should equal the order of the Markov chain.
      *
@@ -214,6 +215,7 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
         return this;
     }
 
+    @Override
     public ExplicitTransitionMatrix normalize() {
         if (!isNormalized) {
             int[] indices = new int[getOrder()];
@@ -227,6 +229,7 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
         return this;
     }
 
+    @Override
     public boolean isNormalized() {
         return isNormalized;
     }

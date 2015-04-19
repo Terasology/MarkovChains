@@ -15,7 +15,10 @@
  */
 package org.terasology.markovChains;
 
+import java.util.List;
+
 import com.google.common.collect.ImmutableList;
+
 import org.junit.Test;
 import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
 import org.terasology.utilities.random.FastRandom;
@@ -67,7 +70,7 @@ public class MarkovChainTest {
 
         final String expectedOutput = "MARKOVVV";
 
-        MarkovChain[] markovChains = new MarkovChain[] {
+        List<MarkovChain<Character>> markovChains = ImmutableList.of(
             //Order 1
             new MarkovChain<>(STATES, TRANSITION_MATRIX_2D),
             new MarkovChain<>(STATES, TRANSITION_MATRIX_2D, 10983),
@@ -76,20 +79,20 @@ public class MarkovChainTest {
             //Order 2
             new MarkovChain<>(STATES, TRANSITION_MATRIX_3D),
             new MarkovChain<>(STATES, TRANSITION_MATRIX_3D, 46360),
-            new MarkovChain<>(STATES, TRANSITION_MATRIX_3D, new FastRandom()),
-        };
+            new MarkovChain<>(STATES, TRANSITION_MATRIX_3D, new FastRandom())
+        );
 
-        for (MarkovChain markovChain: markovChains) {
+        for (MarkovChain<Character> markovChain : markovChains) {
             deterministicChainTest(markovChain, expectedOutput);
         }
     }
 
     @Test
     public void setRandomTest() {
-        MarkovChain chain = new MarkovChain<>(STATES, TRANSITION_MATRIX_2D);
+        MarkovChain<Character> chain = new MarkovChain<>(STATES, TRANSITION_MATRIX_2D);
         chain.next();
 
-        MarkovChain chain2 = new MarkovChain<>(STATES, TRANSITION_MATRIX_2D);
+        MarkovChain<Character> chain2 = new MarkovChain<>(STATES, TRANSITION_MATRIX_2D);
 
         chain.setRandom(new FastRandom(456));
         chain.resetHistory();

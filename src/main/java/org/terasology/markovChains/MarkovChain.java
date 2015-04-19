@@ -211,7 +211,7 @@ public class MarkovChain<S> extends MarkovChainBase {
      * Returns the nth previous state.
      * @param n How many states to look back.
      *          Input of 0 returns the current state.
-     *          0 <= n < {@link #order}.
+     *          0 &le; n &lt; {@link #order}.
      * @return the nth previous state.
      *
      * @since 1.01
