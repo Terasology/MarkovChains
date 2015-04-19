@@ -27,7 +27,6 @@ import java.util.List;
  *
  * @since 1.00
  * @version 1.50
- * @author Linus van Elswijk
  */
 public final class TrainingAlgorithms {
 

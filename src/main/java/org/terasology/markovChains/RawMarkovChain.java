@@ -34,7 +34,6 @@ import java.util.Collection;
  *
  * @since 1.00
  * @version 1.50
- * @author Linus van Elswijk
  */
 public class RawMarkovChain extends MarkovChainBase {
 

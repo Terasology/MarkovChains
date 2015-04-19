@@ -28,7 +28,6 @@ import java.util.Arrays;
  *
  * @since 1.50
  * @version 1.50
- * @author Linus van Elswijk
  */
 public class ExplicitTransitionMatrix extends TransitionMatrix implements Normalizable {
     private boolean isNormalized;

@@ -26,7 +26,6 @@ import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests {@link org.terasology.markovChains.dataStructures.TransitionMatrix}
- * @author Linus van Elswijk
  */
 public class TransitionMatrixTest {
 

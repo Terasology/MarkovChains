@@ -23,7 +23,6 @@ import com.google.common.base.Preconditions;
  *
  * @since 1.00
  * @version 1.50
- * @author Linus van Elswijk
  */
 public abstract class MarkovChainBase {
 

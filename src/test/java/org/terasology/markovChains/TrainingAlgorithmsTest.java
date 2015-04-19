@@ -28,7 +28,6 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Tests {@link TrainingAlgorithms}.
- * @author Linus van Elswijk
  */
 public class TrainingAlgorithmsTest {
 

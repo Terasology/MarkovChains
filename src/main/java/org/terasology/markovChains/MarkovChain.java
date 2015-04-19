@@ -36,7 +36,6 @@ import java.util.LinkedList;
  *
  * @since 1.00
  * @version 1.50
- * @author Linus van Elswijk
  */
 public class MarkovChain<S> extends MarkovChainBase {
 

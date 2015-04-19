@@ -27,7 +27,6 @@ import static junit.framework.Assert.*;
 
 /**
  * Tests {@link org.terasology.markovChains.RawMarkovChain}
- * @author Linus van Elswijk
  */
 public class RawMarkovChainTest {
 
