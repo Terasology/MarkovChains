@@ -1,6 +1,6 @@
 {
     "id" : "MarkovChains",
-    "version" : "1.5.0",
+    "version" : "1.5.1-SNAPSHOT",
     "displayName" : "Markov Chains",
     "author" : "Linus van Elswijk",
     "description" : "Library module for the production of pseudo-random sequences.",
