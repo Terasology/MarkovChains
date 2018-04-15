@@ -100,7 +100,7 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
             Preconditions.checkArgument(
                     probabilities[i] >= 0f,
                     invalidProbabilityExceptionFormat,
-                    i, probabilities[i]
+                    i, new Float(probabilities[i]) //TODO: Quirky auto-boxing made this ambiguous (Guava update). Better option?
             );
         }
 
@@ -167,7 +167,7 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
             Preconditions.checkArgument(
                     probabilities[i] >= 0f,
                     invalidProbability,
-                    i, probabilities[i]
+                    i, new Float(probabilities[i]) //TODO: Quirky auto-boxing made this ambiguous (Guava update). Better option?
             );
         }
 
