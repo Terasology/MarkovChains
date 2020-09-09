@@ -1,18 +1,5 @@
-/*
- * Copyright 2015 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.markovChains.dataStructures;
 
 import junit.framework.Assert;
@@ -25,13 +12,13 @@ import static org.junit.Assert.fail;
 
 /**
  * Tests {@link org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix}
+ *
  * @author Linus van Elswijk
  */
 public class ExplicitTransitionMatrixTest {
 
     /**
-     * Checks that the createTransitionArray creates an array of the right size and
-     * that it only contains zeros.
+     * Checks that the createTransitionArray creates an array of the right size and that it only contains zeros.
      */
     @Test
     public void testCreateTransitionArray() {
@@ -47,7 +34,8 @@ public class ExplicitTransitionMatrixTest {
         for (int[] param : orderAndStateNrPairs) {
             try {
                 TransitionMatrix matrix = new ExplicitTransitionMatrix(
-                        param[order], param[nrOfStates], ExplicitTransitionMatrix.createTransitionArray(param[order], param[nrOfStates])
+                        param[order], param[nrOfStates], ExplicitTransitionMatrix.createTransitionArray(param[order],
+                        param[nrOfStates])
                 );
             } catch (Exception e) {
                 fail("Constructor threw an exception / transition array was not accepted.");
@@ -56,15 +44,14 @@ public class ExplicitTransitionMatrixTest {
     }
 
     /**
-     * Tests if the normalization correctly handles
-     * a transition matrix with only zeros.
+     * Tests if the normalization correctly handles a transition matrix with only zeros.
      */
     @Test
     public void testMatrixNormalization() {
         final float epsilon = 1.0e-5f;
 
         //test zero normalization
-        final float[][] zeroTransitionMatrix = new float[][] {
+        final float[][] zeroTransitionMatrix = new float[][]{
                 {0f, 0f, 0f},
                 {0f, 0f, 0f},
                 {0f, 0f, 0f}

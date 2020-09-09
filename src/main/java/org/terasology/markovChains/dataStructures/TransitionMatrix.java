@@ -1,18 +1,5 @@
-/*
- * Copyright 2015 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.markovChains.dataStructures;
 
 import com.google.common.base.Preconditions;
@@ -22,14 +9,13 @@ import java.util.Arrays;
 /**
  * An abstract base class for objects that describe the transition matrix of a Markov chain.
  *
- * @since 1.50
  * @version 1.50
+ * @since 1.50
  */
 public abstract class TransitionMatrix {
 
     /**
-     * Special value that is returned by the firstInvalidState method,
-     * when all states are valid.
+     * Special value that is returned by the firstInvalidState method, when all states are valid.
      */
     public static final int NO_INVALID_STATES = -1;
 
@@ -39,10 +25,9 @@ public abstract class TransitionMatrix {
     /**
      * Constructs a Markov Chain of any order and any nr of states.
      *
-     * @param order The order (&ge; 1) of the Markov Chain,
-     *      i.e. how many (previous) states are considered to compute the next.
+     * @param order The order (&ge; 1) of the Markov Chain, i.e. how many (previous) states are considered to
+     *         compute the next.
      * @param nrOfStates The nr of states (&ge;1).
-     *
      * @since 1.50
      */
     protected TransitionMatrix(final int order, final int nrOfStates) {
@@ -67,6 +52,7 @@ public abstract class TransitionMatrix {
 
     /**
      * Returns the order of the Markov chain for which the transition matrix is suitable.
+     *
      * @return The order
      */
     public final int getOrder() {
@@ -75,6 +61,7 @@ public abstract class TransitionMatrix {
 
     /**
      * Returns the number of states of the Markov chain for which the transition matrix is suitable.
+     *
      * @return The number of states
      */
     public final int getNrOfStates() {
@@ -83,20 +70,20 @@ public abstract class TransitionMatrix {
 
     /**
      * Returns the probability of transitioning to a state X_n, given history X_0 .. X_n-1
-     * @param states The history (X_0 .. X_n-1) states and target state X_n in the order X_0 to X_n.
-     *               The amount of states given as history should equal the order of the Markov Chain.
-     * @return The probability
      *
+     * @param states The history (X_0 .. X_n-1) states and target state X_n in the order X_0 to X_n. The amount
+     *         of states given as history should equal the order of the Markov Chain.
+     * @return The probability
      * @since 1.50
      */
     public abstract float get(final int... states);
 
     /**
      * Returns the probabilities of transitioning to the next states, given history X_0 .. X_n-1
-     * @param states The history (X_0 .. X_n-1) states.
-     *               The amount of states given as history should equal the order of the Markov Chain - 1.
-     * @return An array with at position i the probability of transitioning towards state X_i.
      *
+     * @param states The history (X_0 .. X_n-1) states. The amount of states given as history should equal the
+     *         order of the Markov Chain - 1.
+     * @return An array with at position i the probability of transitioning towards state X_i.
      * @since 1.50
      */
     public final float[] getRow(final int... states) {
@@ -115,11 +102,10 @@ public abstract class TransitionMatrix {
 
     /**
      * Checks if the object is in a normalized state.
-     *
+     * <p>
      * A transitionMatrix is considered to be normalized if and only if all rows of the transitionMatrix add up to 1.
      *
      * @return true if the object is normalized, false otherwise
-     *
      * @since 1.50
      */
     public boolean isNormalized() {
@@ -129,18 +115,17 @@ public abstract class TransitionMatrix {
     // argument checking /////////////////////////////////////////////////
 
     /**
-     * Validates the states given as argument.
-     * Throws an exception if the nr of states does not match the order or
-     * when one ore more states are outside of the range [0, nrOfStates).
-     * @param asHistory Set to true for calling functions using the states as history,
-     *                  Set to false for calling functions using the states as transition index
-     * @param argumentOffset The argument nr of the states in the calling function.
-     *                       Used to generate a correct error message.
-     * @param states The states that will be validated.
+     * Validates the states given as argument. Throws an exception if the nr of states does not match the order or when
+     * one ore more states are outside of the range [0, nrOfStates).
      *
+     * @param asHistory Set to true for calling functions using the states as history, Set to false for calling
+     *         functions using the states as transition index
+     * @param argumentOffset The argument nr of the states in the calling function. Used to generate a correct
+     *         error message.
+     * @param states The states that will be validated.
      * @since 1.50
      */
-    public void checkInputStates(boolean asHistory, final int argumentOffset, final int ... states) {
+    public void checkInputStates(boolean asHistory, final int argumentOffset, final int... states) {
         // error message ////////////////////////////
         final String nrOfStatesMismatchHistoryFormat =
                 "Received %s states. Nr of states given as should match the order (=%s).";
@@ -178,10 +163,10 @@ public abstract class TransitionMatrix {
 
     /**
      * Checks if all states are in the range [0, nrOfStates).
-     * @param states The states that will be checked.
-     * @return Returns NO_INVALID_STATES if all states are valid,
-     *         Otherwise, returns the number of first invalid argument.
      *
+     * @param states The states that will be checked.
+     * @return Returns NO_INVALID_STATES if all states are valid, Otherwise, returns the number of first invalid
+     *         argument.
      * @since 1.50
      */
     public int firstInvalidState(final int... states) {

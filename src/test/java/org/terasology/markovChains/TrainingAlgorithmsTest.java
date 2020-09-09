@@ -1,18 +1,5 @@
-/*
- * Copyright 2014 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.markovChains;
 
 import org.junit.Test;
@@ -33,13 +20,13 @@ public class TrainingAlgorithmsTest {
 
     private static final char TERMINAL_CHAR = '\n';
 
-    private static final  Pattern[] EXPECTED_PATTERN = new Pattern[] {
+    private static final Pattern[] EXPECTED_PATTERN = new Pattern[]{
             Pattern.compile("(^a(a|b)*b$)"),
             Pattern.compile("(^ab(a|b)*bb$)" + "|" + "(^abb$)"),
             Pattern.compile("(^ab(a|b)*abb$)" + "|" + "(^abb$)")
     };
 
-    private static final String[] TRAINING_STRINGS = new String[] {
+    private static final String[] TRAINING_STRINGS = new String[]{
             "abbabbabb",
             "abababb",
             "abbabbabb",
@@ -47,12 +34,13 @@ public class TrainingAlgorithmsTest {
     };
 
     private static final List<Character> STATES = new LinkedList<>();
+
     static {   // fill STATES
         STATES.add(TERMINAL_CHAR);
 
         Set<Character> encounteredChars = new HashSet<>();
-        for (String string: TRAINING_STRINGS) {
-            for (char c: string.toCharArray()) {
+        for (String string : TRAINING_STRINGS) {
+            for (char c : string.toCharArray()) {
                 encounteredChars.add(c);
             }
         }

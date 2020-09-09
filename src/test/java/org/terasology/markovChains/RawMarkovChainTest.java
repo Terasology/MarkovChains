@@ -1,18 +1,5 @@
-/*
- * Copyright 2014 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.markovChains;
 
 import org.junit.Test;
@@ -23,7 +10,9 @@ import org.terasology.math.TeraMath;
 import java.util.Deque;
 import java.util.LinkedList;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Tests {@link org.terasology.markovChains.RawMarkovChain}
@@ -31,8 +20,7 @@ import static junit.framework.Assert.*;
 public class RawMarkovChainTest {
 
     /**
-     * Tests deterministic Markov Chains that always skip n states,
-     * for various values of n, orders and nr of states
+     * Tests deterministic Markov Chains that always skip n states, for various values of n, orders and nr of states
      */
     @Test
     public void skipNTest() {
@@ -40,8 +28,7 @@ public class RawMarkovChainTest {
     }
 
     /**
-     * Tests Markov Chains that never skip n states,
-     * for various values of n, orders and nr of states
+     * Tests Markov Chains that never skip n states, for various values of n, orders and nr of states
      */
     @Test
     public void doNotSkipNTest() {
@@ -49,9 +36,7 @@ public class RawMarkovChainTest {
     }
 
     /**
-     * Tests user friendly wrappers of methods:
-     *  * Constructor accepting a 2D array
-     *  * Constructor accepting a 3D array
+     * Tests user friendly wrappers of methods: * Constructor accepting a 2D array * Constructor accepting a 3D array
      */
     @Test
     public void testSugar() {
@@ -59,7 +44,7 @@ public class RawMarkovChainTest {
         final float maxError = 1.0e-4f;
 
         // Test 2D matrix constructor /////
-        final float[][] matrix2D = new float [][] {
+        final float[][] matrix2D = new float[][]{
                 {0.0f, 0.1f, 0.2f, 0.3f},
                 {1.0f, 1.1f, 1.2f, 1.3f},
                 {2.0f, 2.1f, 2.2f, 2.3f},
@@ -75,20 +60,20 @@ public class RawMarkovChainTest {
 
         // Test 3D matrix constructor /////
 
-        final float[][][] matrix3D = new float[][][] {
-                new float[][] {
+        final float[][][] matrix3D = new float[][][]{
+                new float[][]{
                         {0.00f, 0.01f, 0.02f},
                         {0.10f, 0.11f, 0.12f},
                         {0.20f, 0.21f, 0.22f},
                 },
 
-                new float[][] {
+                new float[][]{
                         {1.00f, 1.01f, 1.02f},
                         {1.10f, 1.11f, 1.12f},
                         {1.20f, 1.21f, 1.22f},
                 },
 
-                new float[][] {
+                new float[][]{
                         {2.00f, 2.01f, 2.02f},
                         {2.10f, 2.11f, 2.12f},
                         {2.20f, 2.21f, 2.22f},
@@ -126,7 +111,7 @@ public class RawMarkovChainTest {
 
         final float[] row = markovChain.getTransitionMatrix().getRow(history);
         float sumOfRow = 0.0f;
-        for (float prob: row) {
+        for (float prob : row) {
             sumOfRow += prob;
         }
 
@@ -145,8 +130,8 @@ public class RawMarkovChainTest {
 
     private void skipNTest(final boolean doNotSkipN) {
         // first order Markov Chains //////////////////////
-        skipNTest(1, 13,  0, doNotSkipN);  //skip none : return current
-        skipNTest(1, 13,  1, doNotSkipN);  //skip 1    : return current+1
+        skipNTest(1, 13, 0, doNotSkipN);  //skip none : return current
+        skipNTest(1, 13, 1, doNotSkipN);  //skip 1    : return current+1
         skipNTest(1, 13, 12, doNotSkipN);  //skip 12   : return current-1
 
         // second order Markov Chains /////////////////////

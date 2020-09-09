@@ -1,18 +1,5 @@
-/*
- * Copyright 2015 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.markovChains.dataStructures;
 
 import com.google.common.base.Preconditions;
@@ -22,29 +9,27 @@ import java.util.Arrays;
 
 /**
  * An data structure that explicitly stores all transition probability values into a dense matrix.
+ * <p>
+ * The storage requirement is O( k^(i+1) ), where k is the number of states and i is the order. Since the matrix grows
+ * exponentially with the order, it is only suitable for Markov chains with a low order.
  *
- * The storage requirement is O( k^(i+1) ), where k is the number of states and i is the order.
- * Since the matrix grows exponentially with the order, it is only suitable for Markov chains with a low order.
- *
- * @since 1.50
  * @version 1.50
+ * @since 1.50
  */
 public class ExplicitTransitionMatrix extends TransitionMatrix implements Normalizable {
-    private boolean isNormalized;
     private final float[] transitionProbabilityArray;
+    private boolean isNormalized;
 
     // public //////////////////////////////////////////////////////////
 
     /**
      * Constructs a transition matrix for a second order Markov chain.
-     *
+     * <p>
      * The constructed object will be in a state where isNormalized() returns false.
      *
-     * @param transitionMatrix A 3d matrix of transition probabilities.
-     *                      Every element probabilities[x][y][z] determines the probability of transitioning
-     *                      to state z, given previous state y and second previous state x.
-     *                      The matrix must be cubical.
-     *
+     * @param transitionMatrix A 3d matrix of transition probabilities. Every element probabilities[x][y][z]
+     *         determines the probability of transitioning to state z, given previous state y and second previous state
+     *         x. The matrix must be cubical.
      * @since 1.50
      */
     public ExplicitTransitionMatrix(final float[][][] transitionMatrix) {
@@ -53,14 +38,11 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
 
     /**
      * Constructs a transition matrix for a (first order) Markov chain.
-     *
+     * <p>
      * The constructed object will be in a state where isNormalized() returns false.
      *
-     * @param transitionMatrix A 2d matrix of transition probabilities.
-     *                      Every element probabilities[x][y] determines the probability of transitioning
-     *                      from state x to state y.
-     *                      The matrix must be square.
-     *
+     * @param transitionMatrix A 2d matrix of transition probabilities. Every element probabilities[x][y]
+     *         determines the probability of transitioning from state x to state y. The matrix must be square.
      * @since 1.50
      */
     public ExplicitTransitionMatrix(final float[][] transitionMatrix) {
@@ -69,19 +51,18 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
 
     /**
      * Constructs a transition matrix for a Markov chain of any order and any nr of states.
-     *
+     * <p>
      * The constructed object will be in a state where isNormalized() returns false.
      *
      * <b>Note:</b> Avoid calling this constructor directly. Use the more user friendly, 2D and 3D array versions
      * whenever possible.
      *
-     * @param order The order (&ge; 1) of the Markov chain,
-     *      i.e. how many (previous) states are considered to compute the next.
+     * @param order The order (&ge; 1) of the Markov chain, i.e. how many (previous) states are considered to
+     *         compute the next.
      * @param nrOfStates The nr of states (&ge;1).
-     * @param probabilities The transition probabilities of length pow(nrOfStates, order + 1).
-     *      The provided array should be a flattened n-dimensional array of probabilities, with
-     *      n being the order of the Markov chain.
-     *
+     * @param probabilities The transition probabilities of length pow(nrOfStates, order + 1). The provided
+     *         array should be a flattened n-dimensional array of probabilities, with n being the order of the Markov
+     *         chain.
      * @since 1.50
      */
     public ExplicitTransitionMatrix(final int order, final int nrOfStates, final float[] probabilities) {
@@ -100,7 +81,8 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
             Preconditions.checkArgument(
                     probabilities[i] >= 0f,
                     invalidProbabilityExceptionFormat,
-                    i, new Float(probabilities[i]) //TODO: Quirky auto-boxing made this ambiguous (Guava update). Better option?
+                    i, new Float(probabilities[i]) //TODO: Quirky auto-boxing made this ambiguous (Guava update).
+                    // Better option?
             );
         }
 
@@ -127,6 +109,69 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
         isNormalized = false;
     }
 
+    /**
+     * Convenience method to create a transition array of the right size for a given order and nr of states.
+     *
+     * @param order The order of the Markov chain
+     * @param nrOfStates The nr of states in the Markov chain
+     * @return The transition array, filled with zeros.
+     * @since 1.50
+     */
+    public static float[] createTransitionArray(final int order, final int nrOfStates) {
+        return new float[TeraMath.pow(nrOfStates, order + 1)];
+    }
+
+    /**
+     * Flattens a 3D transition matrix into a (1D) transition array)
+     *
+     * @param probabilities The transition matrix.
+     * @return The equivalent transition array.
+     * @since 1.50
+     */
+    protected static float[] flatten(final float[][][] probabilities) {
+        final int width = probabilities.length;
+        final int height = probabilities[0].length;
+        final int depth = probabilities[0][0].length;
+
+        float[] flattened = new float[width * height * depth];
+
+        int i = 0;
+        for (float[][] slice : probabilities) {
+            for (float[] row : slice) {
+                for (float probability : row) {
+                    flattened[i] = probability;
+                    i++;
+                }
+            }
+        }
+
+        return flattened;
+    }
+
+    /**
+     * Flattens a 2D transition matrix into a (1D) transition array)
+     *
+     * @param probabilities The transition matrix.
+     * @return The equivalent transition array.
+     * @since 1.50
+     */
+    protected static float[] flatten(final float[][] probabilities) {
+        final int width = probabilities.length;
+        final int height = probabilities[0].length;
+
+        float[] flattened = new float[width * height];
+
+        int i = 0;
+        for (float[] row : probabilities) {
+            for (float probability : row) {
+                flattened[i] = probability;
+                i++;
+            }
+        }
+
+        return flattened;
+    }
+
     @Override
     public float get(final int... states) {
         checkInputStates(false, 0, states);
@@ -135,18 +180,16 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
     }
 
     /**
-     * Sets the transition probabilities for all target states for a specific history.
-     * Will put the object into a state where isNormalized() returns false.
+     * Sets the transition probabilities for all target states for a specific history. Will put the object into a state
+     * where isNormalized() returns false.
      *
      * @param probabilities the new probabilities (all &ge; 0).
-     * @param states The history (X_0 .. X_n) states in the order X_0 to X_n.
-     *               The amount of states given as history should equal the order of the Markov chain - 1.
-     *
+     * @param states The history (X_0 .. X_n) states in the order X_0 to X_n. The amount of states given as
+     *         history should equal the order of the Markov chain - 1.
      * @return this object
-     *
      * @since 1.50
      */
-    public ExplicitTransitionMatrix setRow(final float[] probabilities, final int ... states) {
+    public ExplicitTransitionMatrix setRow(final float[] probabilities, final int... states) {
         final String invalidProbabilityArrayLength =
                 "Probability array length should match the number of states (%s), but was %s";
 
@@ -161,13 +204,14 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
                 getNrOfStates(), probabilities.length
         );
 
-        checkInputStates(true, 1,  states);
+        checkInputStates(true, 1, states);
 
         for (int i = 0; i < probabilities.length; i++) {
             Preconditions.checkArgument(
                     probabilities[i] >= 0f,
                     invalidProbability,
-                    i, new Float(probabilities[i]) //TODO: Quirky auto-boxing made this ambiguous (Guava update). Better option?
+                    i, new Float(probabilities[i]) //TODO: Quirky auto-boxing made this ambiguous (Guava update).
+                    // Better option?
             );
         }
 
@@ -180,19 +224,19 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
         return this;
     }
 
+    // private /////////////////////////////////////////////////////////
+
     /**
-     * Sets a transition probability to a new value.
-     * Will put the object into a state where isNormalized() returns false.
+     * Sets a transition probability to a new value. Will put the object into a state where isNormalized() returns
+     * false.
      *
      * @param probability the new probability (&ge; 0).
-     * @param states The history (X_0 .. X_n-1) states and target state X_n in the order X_0 to X_n.
-     *               The amount of states given as history should equal the order of the Markov chain.
-     *
+     * @param states The history (X_0 .. X_n-1) states and target state X_n in the order X_0 to X_n. The amount
+     *         of states given as history should equal the order of the Markov chain.
      * @return this object
-     *
      * @since 1.50
      */
-    public ExplicitTransitionMatrix set(final float probability, final int ... states) {
+    public ExplicitTransitionMatrix set(final float probability, final int... states) {
         // check preconditions //////////////////////
         // error messages ///////////////////////
         final String invalidProbability =
@@ -234,26 +278,24 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
         return isNormalized;
     }
 
-    // private /////////////////////////////////////////////////////////
-
-    private int toIndex(final int ... states) {
+    private int toIndex(final int... states) {
         int index = 0;
 
-        for (int i = 0           , statePower = TeraMath.pow(getNrOfStates(), getOrder());
-                i < states.length;
-                i++              , statePower /= getNrOfStates()
-            ) {
+        for (int i = 0, statePower = TeraMath.pow(getNrOfStates(), getOrder());
+             i < states.length;
+             i++, statePower /= getNrOfStates()
+        ) {
             index += states[i] * statePower;
         }
 
         return index;
     }
 
-    private int lastIndex(int ... states) {
+    private int lastIndex(int... states) {
         return toIndex(states) + getNrOfStates() - 1;
     }
 
-    private void normalizeRow(final int ... states) {
+    private void normalizeRow(final int... states) {
         // function scope data /////////////////////
 
         final int startIndex = toIndex(states);
@@ -315,68 +357,5 @@ public class ExplicitTransitionMatrix extends TransitionMatrix implements Normal
         }
 
         return false;
-    }
-
-    /**
-     * Convenience method to create a transition array of the right size for
-     * a given order and nr of states.
-     * @param order The order of the Markov chain
-     * @param nrOfStates The nr of states in the Markov chain
-     * @return The transition array, filled with zeros.
-     *
-     * @since 1.50
-     */
-    public static float[] createTransitionArray(final int order, final int nrOfStates) {
-        return new float[TeraMath.pow(nrOfStates, order + 1)];
-    }
-
-    /**
-     * Flattens a 3D transition matrix into a (1D) transition array)
-     * @param probabilities The transition matrix.
-     * @return The equivalent transition array.
-     *
-     * @since 1.50
-     */
-    protected static float[] flatten(final float[][][] probabilities) {
-        final int width  = probabilities.length;
-        final int height = probabilities[0].length;
-        final int depth = probabilities[0][0].length;
-
-        float[] flattened = new float[width * height * depth];
-
-        int i = 0;
-        for (float[][] slice : probabilities) {
-            for (float[] row : slice) {
-                for (float probability : row) {
-                    flattened[i] = probability;
-                    i++;
-                }
-            }
-        }
-
-        return flattened;
-    }
-
-    /**
-     * Flattens a 2D transition matrix into a (1D) transition array)
-     * @param probabilities The transition matrix.
-     * @return The equivalent transition array.
-     * @since 1.50
-     */
-    protected static float[] flatten(final float[][] probabilities) {
-        final int width  = probabilities.length;
-        final int height = probabilities[0].length;
-
-        float[] flattened = new float[width * height];
-
-        int i = 0;
-        for (float[] row : probabilities) {
-            for (float probability : row) {
-                flattened[i] = probability;
-                i++;
-            }
-        }
-
-        return flattened;
     }
 }

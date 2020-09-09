@@ -1,41 +1,27 @@
-/*
- * Copyright 2014 MovingBlocks
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+// Copyright 2020 The Terasology Foundation
+// SPDX-License-Identifier: Apache-2.0
 package org.terasology.markovChains;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
 import org.terasology.markovChains.dataStructures.TransitionMatrix;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
 
-import java.util.List;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 
 /**
- * N-order Markov Chain implementation.
- * This is the user friendly version.
- *
+ * N-order Markov Chain implementation. This is the user friendly version.
+ * <p>
  * If more control over the internal state is necessary, use {@link RawMarkovChain} instead.
- * @param <S> The type of the states.
  *
- * @since 1.00
+ * @param <S> The type of the states.
  * @version 1.50
+ * @since 1.00
  */
 public class MarkovChain<S> extends MarkovChainBase {
 
@@ -50,15 +36,14 @@ public class MarkovChain<S> extends MarkovChainBase {
     public final ImmutableList<S> states;
 
     /**
-     * History of states ordered from least recent to most recent.
-     * history.first() is the nth previous state, where n={@link #order}
-     * history.last() is the current state.
+     * History of states ordered from least recent to most recent. history.first() is the nth previous state, where
+     * n={@link #order} history.last() is the current state.
      */
     private final List<S> history;
 
     /**
-     * The state indices for the states in {@link #history},
-     * such that for all x: states.get(rawHistory(x)) == history(x)
+     * The state indices for the states in {@link #history}, such that for all x: states.get(rawHistory(x)) ==
+     * history(x)
      */
     private final List<Integer> rawHistory;
 
@@ -73,10 +58,9 @@ public class MarkovChain<S> extends MarkovChainBase {
      * whenever possible.
      *
      * @param states The states in the chain.
-     * @param transitionMatrix The transition probabilities of length pow(nrOfStates, order + 1).
-     *      The provided array should be a flattened n-dimensional array of probabilities, with
-     *      n being the order of the markov chain.
-     *
+     * @param transitionMatrix The transition probabilities of length pow(nrOfStates, order + 1). The provided
+     *         array should be a flattened n-dimensional array of probabilities, with n being the order of the markov
+     *         chain.
      * @since 1.50
      */
     public MarkovChain(List<S> states, TransitionMatrix transitionMatrix) {
@@ -90,11 +74,10 @@ public class MarkovChain<S> extends MarkovChainBase {
      * whenever possible.
      *
      * @param states The states in the chain.
-     * @param transitionMatrix The transition probabilities of length pow(nrOfStates, order + 1).
-     *      The provided array should be a flattened n-dimensional array of probabilities, with
-     *      n being the order of the markov chain.
+     * @param transitionMatrix The transition probabilities of length pow(nrOfStates, order + 1). The provided
+     *         array should be a flattened n-dimensional array of probabilities, with n being the order of the markov
+     *         chain.
      * @param seed The seed for the random number generator used for determining next states.
-     *
      * @since 1.50
      */
     public MarkovChain(List<S> states, TransitionMatrix transitionMatrix, long seed) {
@@ -108,11 +91,10 @@ public class MarkovChain<S> extends MarkovChainBase {
      * whenever possible.
      *
      * @param states The states in the chain.
-     * @param transitionMatrix The transition probabilities of length pow(nrOfStates, order + 1).
-     *      The provided array should be a flattened n-dimensional array of probabilities, with
-     *      n being the order of the markov chain.
+     * @param transitionMatrix The transition probabilities of length pow(nrOfStates, order + 1). The provided
+     *         array should be a flattened n-dimensional array of probabilities, with n being the order of the markov
+     *         chain.
      * @param random The random number generator used for determining next states.
-     *
      * @since 1.50
      */
     public MarkovChain(List<S> states, TransitionMatrix transitionMatrix, Random random) {
@@ -122,13 +104,12 @@ public class MarkovChain<S> extends MarkovChainBase {
     /**
      * Wraps a MarkovChain interface over a {@link RawMarkovChain}.
      *
-     *  <b>Note:</b> In most cases you won't need to construct a {@link RawMarkovChain} before constructing
-     *  a {@link MarkovChain}. Use one of the other constructors where possible.
+     * <b>Note:</b> In most cases you won't need to construct a {@link RawMarkovChain} before constructing
+     * a {@link MarkovChain}. Use one of the other constructors where possible.
      *
      * @param states The states in the chain.
      * @param rawMarkovChain The RawMarkovChain controlling the MarkovChain.
      * @param random The random number generator used for determining next states.
-     *
      * @since 1.50
      */
     public MarkovChain(List<S> states, RawMarkovChain rawMarkovChain, Random random) {
@@ -148,24 +129,27 @@ public class MarkovChain<S> extends MarkovChainBase {
         resetHistory();
     }
 
+    private static <S> boolean allUnique(List<S> objects) {
+        Set<S> set = new HashSet<>(objects);
+        return set.size() == objects.size();
+    }
+
+    // public interface //////////////////////////////////////////////////
+
     /**
      * Replace the RNG with a new one.
      *
      * @param random the new random number generator.
-     *
      * @since 1.1.0
      */
     public void setRandom(Random random) {
         this.random = random;
     }
 
-    // public interface //////////////////////////////////////////////////
-
     /**
      * Moves the chain to the next state.
      *
      * @return The next state.
-     *
      * @since 1.00
      */
     public S next() {
@@ -184,11 +168,9 @@ public class MarkovChain<S> extends MarkovChainBase {
     }
 
     /**
-     * Returns the current state.
-     * Equivalent to previous(0).
+     * Returns the current state. Equivalent to previous(0).
      *
      * @return The current state.
-     *
      * @since 1.00
      */
     public S current() {
@@ -196,11 +178,9 @@ public class MarkovChain<S> extends MarkovChainBase {
     }
 
     /**
-     * Returns the previous state.
-     * Equivalent to previous(1).
+     * Returns the previous state. Equivalent to previous(1).
      *
      * @return The previous state.
-     *
      * @since 1.01
      */
     public S previous() {
@@ -209,11 +189,10 @@ public class MarkovChain<S> extends MarkovChainBase {
 
     /**
      * Returns the nth previous state.
-     * @param n How many states to look back.
-     *          Input of 0 returns the current state.
-     *          0 &le; n &lt; {@link #order}.
-     * @return the nth previous state.
      *
+     * @param n How many states to look back. Input of 0 returns the current state. 0 &le; n &lt; {@link
+     *         #order}.
+     * @return the nth previous state.
      * @since 1.01
      */
     public S previous(final int n) {
@@ -225,6 +204,8 @@ public class MarkovChain<S> extends MarkovChainBase {
 
         return history.get(history.size() - n - 1);
     }
+
+    // private /////////////////////////////////////////////////////////
 
     /**
      * Resets the history.
@@ -240,12 +221,5 @@ public class MarkovChain<S> extends MarkovChainBase {
             history.add(states.get(0));
             rawHistory.add(0);
         }
-    }
-
-    // private /////////////////////////////////////////////////////////
-
-    private static <S> boolean  allUnique(List<S> objects) {
-        Set<S> set = new HashSet<>(objects);
-        return set.size() == objects.size();
     }
 }
