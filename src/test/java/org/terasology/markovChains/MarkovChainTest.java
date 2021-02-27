@@ -15,15 +15,15 @@
  */
 package org.terasology.markovChains;
 
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
 import org.terasology.utilities.random.FastRandom;
 
-import static junit.framework.Assert.*;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 
 /**
  * Tests {@link org.terasology.markovChains.MarkovChain}
@@ -35,7 +35,7 @@ public class MarkovChainTest {
     private static final ImmutableList<Character> STATES =
             ImmutableList.of('0', 'M', 'K', 'A', 'O', 'R', 'V');
 
-    private static final float[][] TRANSITION_MATRIX_2D_RAW =  {
+    private static final float[][] TRANSITION_MATRIX_2D_RAW = {
             //   0  M  K  A  O  R  V
             {0, 1, 0, 0, 0, 0, 0}, //0 -> M
             {0, 0, 0, 1, 0, 0, 0}, //M -> A
@@ -46,9 +46,10 @@ public class MarkovChainTest {
             {0, 0, 0, 0, 0, 0, 1}, //V -> V
     };
 
-    private static final ExplicitTransitionMatrix TRANSITION_MATRIX_2D = new ExplicitTransitionMatrix(TRANSITION_MATRIX_2D_RAW);
+    private static final ExplicitTransitionMatrix TRANSITION_MATRIX_2D =
+            new ExplicitTransitionMatrix(TRANSITION_MATRIX_2D_RAW);
 
-    private static final float [][][] TRANSITION_MATRIX_3D_RAW = {
+    private static final float[][][] TRANSITION_MATRIX_3D_RAW = {
             TRANSITION_MATRIX_2D_RAW, //0
             TRANSITION_MATRIX_2D_RAW, //M
             TRANSITION_MATRIX_2D_RAW, //K
@@ -59,11 +60,12 @@ public class MarkovChainTest {
     };
 
 
-    private static final ExplicitTransitionMatrix TRANSITION_MATRIX_3D = new ExplicitTransitionMatrix(TRANSITION_MATRIX_3D_RAW);
+    private static final ExplicitTransitionMatrix TRANSITION_MATRIX_3D =
+            new ExplicitTransitionMatrix(TRANSITION_MATRIX_3D_RAW);
 
     /**
-     * Tests a deterministic Markov Chain that generates the string "MARKOVVV".
-     * Markov Chain is constructed with various constructors.
+     * Tests a deterministic Markov Chain that generates the string "MARKOVVV". Markov Chain is constructed with various
+     * constructors.
      */
     @Test
     public void deterministicChainTest() {
@@ -71,15 +73,15 @@ public class MarkovChainTest {
         final String expectedOutput = "MARKOVVV";
 
         List<MarkovChain<Character>> markovChains = ImmutableList.of(
-            //Order 1
-            new MarkovChain<>(STATES, TRANSITION_MATRIX_2D),
-            new MarkovChain<>(STATES, TRANSITION_MATRIX_2D, 10983),
-            new MarkovChain<>(STATES, TRANSITION_MATRIX_2D, new FastRandom()),
+                //Order 1
+                new MarkovChain<>(STATES, TRANSITION_MATRIX_2D),
+                new MarkovChain<>(STATES, TRANSITION_MATRIX_2D, 10983),
+                new MarkovChain<>(STATES, TRANSITION_MATRIX_2D, new FastRandom()),
 
-            //Order 2
-            new MarkovChain<>(STATES, TRANSITION_MATRIX_3D),
-            new MarkovChain<>(STATES, TRANSITION_MATRIX_3D, 46360),
-            new MarkovChain<>(STATES, TRANSITION_MATRIX_3D, new FastRandom())
+                //Order 2
+                new MarkovChain<>(STATES, TRANSITION_MATRIX_3D),
+                new MarkovChain<>(STATES, TRANSITION_MATRIX_3D, 46360),
+                new MarkovChain<>(STATES, TRANSITION_MATRIX_3D, new FastRandom())
         );
 
         for (MarkovChain<Character> markovChain : markovChains) {
@@ -104,30 +106,23 @@ public class MarkovChainTest {
         }
     }
 
-    private void deterministicChainTest(final MarkovChain<Character> markovChain,
-                                        final String expectedOutput
-    ) {
+    private void deterministicChainTest(final MarkovChain<Character> markovChain, final String expectedOutput) {
         StringBuilder produced = new StringBuilder();
 
         for (int i = 0; i < expectedOutput.length(); i++) {
             // production
             produced.append(markovChain.next());
-
             // test current()
             assertEquals(produced.charAt(i), (char) markovChain.current());
-
             // test previous()
             if (i > 0) {
                 assertEquals(produced.charAt(i - 1), (char) markovChain.previous());
             }
-
             //test previous(n)
             for (int j = 0; j < Math.min(i, markovChain.order); j++) {
                 assertEquals(produced.charAt(i - j), (char) markovChain.previous(j));
             }
         }
-
         assertEquals(expectedOutput, produced.toString());
     }
-
 }
