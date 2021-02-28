@@ -15,7 +15,7 @@
  */
 package org.terasology.markovChains;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertTrue;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Tests {@link TrainingAlgorithms}.
  */
@@ -33,13 +33,13 @@ public class TrainingAlgorithmsTest {
 
     private static final char TERMINAL_CHAR = '\n';
 
-    private static final  Pattern[] EXPECTED_PATTERN = new Pattern[] {
+    private static final Pattern[] EXPECTED_PATTERN = new Pattern[]{
             Pattern.compile("(^a(a|b)*b$)"),
             Pattern.compile("(^ab(a|b)*bb$)" + "|" + "(^abb$)"),
             Pattern.compile("(^ab(a|b)*abb$)" + "|" + "(^abb$)")
     };
 
-    private static final String[] TRAINING_STRINGS = new String[] {
+    private static final String[] TRAINING_STRINGS = new String[]{
             "abbabbabb",
             "abababb",
             "abbabbabb",
@@ -47,12 +47,13 @@ public class TrainingAlgorithmsTest {
     };
 
     private static final List<Character> STATES = new LinkedList<>();
+
     static {   // fill STATES
         STATES.add(TERMINAL_CHAR);
 
         Set<Character> encounteredChars = new HashSet<>();
-        for (String string: TRAINING_STRINGS) {
-            for (char c: string.toCharArray()) {
+        for (String string : TRAINING_STRINGS) {
+            for (char c : string.toCharArray()) {
                 encounteredChars.add(c);
             }
         }
@@ -93,7 +94,7 @@ public class TrainingAlgorithmsTest {
                 string, order, pattern
         );
 
-        assertTrue(message, EXPECTED_PATTERN[order - 1].matcher(string).matches());
+        assertTrue(EXPECTED_PATTERN[order - 1].matcher(string).matches(), message);
     }
 
     private MarkovChain<Character> stringGenerator(int order) {

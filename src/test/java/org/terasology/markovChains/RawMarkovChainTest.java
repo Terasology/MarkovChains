@@ -15,7 +15,7 @@
  */
 package org.terasology.markovChains;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
 import org.terasology.markovChains.dataStructures.TransitionMatrix;
 import org.terasology.math.TeraMath;
@@ -23,7 +23,9 @@ import org.terasology.math.TeraMath;
 import java.util.Deque;
 import java.util.LinkedList;
 
-import static junit.framework.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests {@link org.terasology.markovChains.RawMarkovChain}
@@ -184,7 +186,7 @@ public class RawMarkovChainTest {
         for (int i = 0; i < nrOfRuns; i++) {
             int next = chain.getNext(TestUtilities.RANDOM_NUMBER_GENERATOR.nextFloat(), previousStates);
             if (doNotSkipN) {
-                assertFalse((previousStates.getLast() + n) % states == next);
+                assertNotEquals(next, (previousStates.getLast() + n) % states);
             } else {
                 assertEquals((previousStates.getLast() + n) % states, next);
             }
