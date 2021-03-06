@@ -15,13 +15,12 @@
  */
 package org.terasology.markovChains.dataStructures;
 
-import junit.framework.Assert;
 import org.junit.jupiter.api.Test;
 import org.terasology.markovChains.TestUtilities;
 import org.terasology.math.TeraMath;
 
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests {@link org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix}
@@ -100,7 +99,7 @@ public class ExplicitTransitionMatrixTest {
 
         try {
             matrix.get(0, 4);
-            Assert.fail("Exception should have been thrown");
+            fail("Exception should have been thrown");
         } catch (IllegalArgumentException e) {
             // test passed
             assertTrue(true);
@@ -108,7 +107,7 @@ public class ExplicitTransitionMatrixTest {
 
         try {
             matrix.get(-1, 3);
-            Assert.fail("Exception should have been thrown");
+            fail("Exception should have been thrown");
         } catch (IllegalArgumentException e) {
             // test passed
             assertTrue(true);
