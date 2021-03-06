@@ -16,7 +16,7 @@
 package org.terasology.markovChains.dataStructures;
 
 import junit.framework.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.terasology.markovChains.TestUtilities;
 import org.terasology.math.TeraMath;
 
