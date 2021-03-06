@@ -15,14 +15,13 @@
  */
 package org.terasology.markovChains.dataStructures;
 
-import junit.framework.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.terasology.markovChains.TestUtilities;
 import org.terasology.math.TeraMath;
 
-
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests {@link org.terasology.markovChains.dataStructures.TransitionMatrix}
@@ -48,7 +47,7 @@ public class TransitionMatrixTest {
 
         try {
             matrix.setRow(probsIncorrectLength, statesValid);
-            Assert.fail("Exception should have been thrown");
+            fail("Exception should have been thrown");
 
             // Avoid unused local value warnings.
             matrix.get(statesValid);
@@ -59,7 +58,7 @@ public class TransitionMatrixTest {
 
         try {
             matrix.setRow(probsInvalid, statesValid);
-            Assert.fail("Exception should have been thrown");
+            fail("Exception should have been thrown");
 
             // Avoid unused local value warnings.
             matrix.get(statesValid);
@@ -70,7 +69,7 @@ public class TransitionMatrixTest {
 
         try {
             matrix.setRow(probsValid, statesIncorrectLength);
-            Assert.fail("Exception should have been thrown");
+            fail("Exception should have been thrown");
 
             // Avoid unused local value warnings.
             matrix.get(statesValid);
@@ -81,7 +80,7 @@ public class TransitionMatrixTest {
 
         try {
             matrix.setRow(probsValid, statesInvalid);
-            Assert.fail("Exception should have been thrown");
+            fail("Exception should have been thrown");
         } catch (IllegalArgumentException e) {
             // test passed
             assertTrue(true);
