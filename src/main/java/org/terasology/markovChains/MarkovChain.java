@@ -17,14 +17,14 @@ package org.terasology.markovChains;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
 import org.terasology.markovChains.dataStructures.TransitionMatrix;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
 
-import java.util.List;
-import java.util.Set;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
 
 
 /**

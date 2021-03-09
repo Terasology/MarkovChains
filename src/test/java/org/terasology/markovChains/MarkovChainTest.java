@@ -17,8 +17,8 @@ package org.terasology.markovChains;
 
 import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.Test;
+import org.terasology.engine.utilities.random.FastRandom;
 import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
-import org.terasology.utilities.random.FastRandom;
 
 import java.util.List;
 

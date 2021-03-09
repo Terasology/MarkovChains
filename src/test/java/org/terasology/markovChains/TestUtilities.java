@@ -15,10 +15,10 @@
  */
 package org.terasology.markovChains;
 
+import org.terasology.engine.utilities.random.FastRandom;
+import org.terasology.engine.utilities.random.Random;
 import org.terasology.markovChains.dataStructures.ExplicitTransitionMatrix;
 import org.terasology.math.TeraMath;
-import org.terasology.utilities.random.FastRandom;
-import org.terasology.utilities.random.Random;
 
 /**
  * General utility stuff used to test multiple classes.
